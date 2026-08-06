@@ -18,6 +18,7 @@ export type ReportTemplate = {
   title: string;
   freeSummary: string[];
   immediateAction: string;
+  avoidToday: string;
   sampleMessage: string;
   fullSummary: string;
   communicationPattern: string;

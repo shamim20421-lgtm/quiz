@@ -26,7 +26,7 @@ export default function HomePage() {
         <div className="max-w-[640px]">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-rose-200/30 px-3 py-2 text-sm text-rose-100">
             <ShieldCheck aria-hidden="true" className="h-4 w-4" />
-            Relationship Assistant
+            সম্পর্ক সহায়ক
           </div>
           <h1 className="text-4xl font-black leading-tight text-white sm:text-5xl">সে ২ দিন ধরে রিপ্লাই দিচ্ছে না?</h1>
           <p className="mt-4 text-xl font-semibold leading-8 text-rose-100">এখন কী করবেন, ১ মিনিটে বুঝে নিন।</p>

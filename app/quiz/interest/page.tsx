@@ -8,14 +8,22 @@ import { ProgressBar } from "@/components/progress-bar";
 import { assessmentQuestions } from "@/lib/assessment/questions";
 import { useSessionState } from "@/lib/session-context";
 
+const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+
+function toBanglaNumber(value: number) {
+  return String(value).replace(/\d/g, (digit) => banglaDigits[Number(digit)]);
+}
+
 export default function QuizInterestPage() {
   const router = useRouter();
   const { sessionToken, setAnswer, answers } = useSessionState();
   const [intro, setIntro] = useState(true);
   const [index, setIndex] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const question = assessmentQuestions[index];
+  const progressPercent = Math.round(((index + 1) / assessmentQuestions.length) * 100);
 
   useEffect(() => {
     if (!sessionToken) router.replace("/start");
@@ -24,6 +32,7 @@ export default function QuizInterestPage() {
   async function choose(answerKey: string) {
     if (!sessionToken) return;
     setSaving(true);
+    setSaved(false);
     setError("");
     try {
       const response = await fetch("/api/quiz/answer", {
@@ -34,10 +43,16 @@ export default function QuizInterestPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       setAnswer(question.key, answerKey);
+      setSaved(true);
+      await new Promise((resolve) => setTimeout(resolve, 400));
       if (index === assessmentQuestions.length - 1) router.push("/analyzing");
-      else setIndex((current) => current + 1);
+      else {
+        setIndex((current) => current + 1);
+        setSaved(false);
+      }
     } catch {
-      setError("উত্তরটি সংরক্ষণ হয়নি। আবার চেষ্টা করুন।");
+      setSaved(false);
+      setError("উত্তরটি সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setSaving(false);
     }
@@ -77,7 +92,8 @@ export default function QuizInterestPage() {
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
       <section className="mx-auto max-w-[520px] rounded-3xl bg-[#fff8fb] p-5 text-slate-900">
         <ProgressBar value={index + 1} max={assessmentQuestions.length} />
-        <p className="mt-5 text-sm font-bold text-rose-700">প্রশ্ন {index + 1} / ১০</p>
+        <p className="mt-5 text-sm font-bold text-rose-700">{toBanglaNumber(progressPercent)}% সম্পন্ন</p>
+        <p className="sr-only">প্রশ্ন {toBanglaNumber(index + 1)}, মোট ১০টি প্রশ্ন</p>
         <h1 className="mt-3 text-2xl font-black leading-snug">{question.text}</h1>
         <div className="mt-6 grid gap-3">
           {question.answers.map((answer) => (
@@ -90,6 +106,7 @@ export default function QuizInterestPage() {
               type="button"
               onClick={() => {
                 setError("");
+                setSaved(false);
                 setIndex((current) => current - 1);
               }}
               className="inline-flex min-h-12 items-center gap-2 rounded-full border border-slate-300 px-4 font-semibold text-slate-800 focus:outline focus:outline-2 focus:outline-rose-500"
@@ -100,7 +117,9 @@ export default function QuizInterestPage() {
           ) : (
             <span />
           )}
-          <p className="text-sm text-slate-500">{saving ? "সংরক্ষণ হচ্ছে..." : ""}</p>
+          <p aria-live="polite" className="text-sm text-slate-500">
+            {saved ? "উত্তর সংরক্ষণ করা হয়েছে" : saving ? "সংরক্ষণ হচ্ছে..." : ""}
+          </p>
         </div>
         <div aria-live="polite" className="mt-3 min-h-6 text-sm font-semibold text-rose-700">
           {error ? (

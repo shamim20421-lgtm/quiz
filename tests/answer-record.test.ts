@@ -3,14 +3,14 @@ import { buildAnswerRecord } from "@/lib/assessment/answer-record";
 
 describe("server-derived answer records", () => {
   it("derives score and text from the server assessment definition", () => {
-    const record = buildAnswerRecord("session-id", "q1", "much_less");
+    const record = buildAnswerRecord("session-id", "q1", "not_once");
 
     expect(record).toMatchObject({
       quiz_session_id: "session-id",
       question_key: "q1",
-      answer_key: "much_less",
-      question_text: "আগের তুলনায় এখন যোগাযোগ কতটা কমেছে?",
-      answer_text: "অনেক কমেছে",
+      answer_key: "not_once",
+      question_text: "গত ৭ দিনে সে নিজে থেকে কতদিন বার্তা পাঠিয়েছে?",
+      answer_text: "একবারও না",
       answer_score: 3,
     });
   });

@@ -50,6 +50,7 @@ export default function MessagePage() {
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
       <form onSubmit={submit} className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-slate-900">
         <h1 className="text-3xl font-black">বাংলা বার্তা তৈরি করুন</h1>
+        <p className="mt-3 leading-7 text-slate-600">পরিস্থিতিটি লিখুন—আপনার জন্য তিনটি ভিন্ন ভঙ্গির সম্মানজনক বার্তা তৈরি হবে।</p>
         <div className="mt-6 grid gap-5">
           <label className="grid gap-2 font-semibold">
             সে কী লিখেছে?
@@ -60,7 +61,7 @@ export default function MessagePage() {
             <textarea name="intention" required maxLength={1000} rows={5} className="rounded-2xl border border-slate-300 p-4 leading-7 focus:outline focus:outline-2 focus:outline-rose-500" />
           </label>
           <fieldset>
-            <legend className="font-semibold">ভঙ্গি</legend>
+            <legend className="font-semibold">বার্তার ভঙ্গি বেছে নিন</legend>
             <div className="mt-3 grid grid-cols-2 gap-3">
               {tones.map((item) => (
                 <button

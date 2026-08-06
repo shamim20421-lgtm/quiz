@@ -61,6 +61,7 @@ export async function completeQuizWithClient(client: SupabaseLike, sessionToken:
       title: report.title,
       free_summary: report.freeSummary,
       immediate_action: report.immediateAction,
+      avoid_today: report.avoidToday,
       sample_message: report.sampleMessage,
       full_summary: report.fullSummary,
       communication_pattern: report.communicationPattern,

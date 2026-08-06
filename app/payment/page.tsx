@@ -54,6 +54,7 @@ export default function PaymentPage() {
           <label className="grid gap-2 font-semibold">
             মোবাইল নম্বর
             <input name="mobileNumber" required className="min-h-12 rounded-2xl border border-slate-300 px-4 focus:outline focus:outline-2 focus:outline-rose-500" />
+            <span className="text-sm font-medium leading-6 text-slate-500">আপনার নম্বর শুধু এই পরীক্ষামূলক পেমেন্ট যাচাইয়ের জন্য ব্যবহৃত হবে।</span>
           </label>
           <label className="grid gap-2 font-semibold">
             লেনদেন নম্বর

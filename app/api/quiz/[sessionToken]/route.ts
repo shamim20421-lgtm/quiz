@@ -30,6 +30,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ses
         title: storedReport?.title ?? template.title,
         free_summary: storedReport?.free_summary ?? template.freeSummary,
         immediate_action: storedReport?.immediate_action ?? template.immediateAction,
+        avoid_today: storedReport?.avoid_today ?? template.avoidToday,
         sample_message: storedReport?.sample_message ?? template.sampleMessage,
         full_summary: storedReport?.full_summary ?? template.fullSummary,
         communication_pattern: storedReport?.communication_pattern ?? template.communicationPattern,
