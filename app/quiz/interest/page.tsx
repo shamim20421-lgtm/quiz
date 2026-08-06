@@ -109,8 +109,20 @@ export default function QuizInterestPage() {
   return (
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
       <section className="mx-auto max-w-[520px] rounded-3xl bg-[#fff8fb] p-5 text-slate-900">
-        <ProgressBar value={index + 1} max={assessmentQuestions.length} />
-        <p className="mt-5 text-sm font-bold text-rose-700">{toBanglaNumber(progressPercent)}% সম্পন্ন</p>
+        <div className="flex items-start gap-3">
+          <div className="min-w-0 flex-1 pt-4">
+            <ProgressBar value={index + 1} max={assessmentQuestions.length} />
+          </div>
+          <button
+            type="button"
+            onClick={() => router.push("/start")}
+            aria-label="যাচাই বন্ধ করুন"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 focus:outline focus:outline-2 focus:outline-rose-500"
+          >
+            <X aria-hidden="true" className="h-5 w-5" />
+          </button>
+        </div>
+        <p className="mt-4 text-sm font-bold text-rose-700">{toBanglaNumber(progressPercent)}% সম্পন্ন</p>
         <p className="sr-only">প্রশ্ন {toBanglaNumber(index + 1)}, মোট ১০টি প্রশ্ন</p>
         <h1 className="mt-3 text-2xl font-black leading-snug">{question.text}</h1>
         <div className="mt-6 grid gap-3">

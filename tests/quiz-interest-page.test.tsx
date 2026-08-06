@@ -44,6 +44,14 @@ describe("quiz interest page", () => {
     expect(screen.queryByText("প্রশ্ন ১ / ১০")).toBeNull();
   });
 
+  it("lets users close the active quiz and return to start", () => {
+    render(<QuizInterestPage />);
+    fireEvent.click(screen.getByRole("button", { name: "শুরু করুন" }));
+    fireEvent.click(screen.getByRole("button", { name: "যাচাই বন্ধ করুন" }));
+
+    expect(push).toHaveBeenCalledWith("/start");
+  });
+
   it("lets users leave the introduction screen", () => {
     render(<QuizInterestPage />);
 
