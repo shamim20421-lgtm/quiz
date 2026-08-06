@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Clock, FileText, RotateCcw, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Clock, FileText, RotateCcw, ShieldCheck, X } from "lucide-react";
 import { AnswerOption } from "@/components/answer-option";
 import { ProgressBar } from "@/components/progress-bar";
 import { assessmentQuestions } from "@/lib/assessment/questions";
@@ -62,7 +62,25 @@ export default function QuizInterestPage() {
     return (
       <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
         <section className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-slate-900">
-          <h1 className="text-3xl font-black">শুরু করার আগে</h1>
+          <div className="flex items-start justify-between gap-4">
+            <button
+              type="button"
+              onClick={() => router.push("/start")}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-300 px-4 font-semibold text-slate-800 focus:outline focus:outline-2 focus:outline-rose-500"
+            >
+              <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+              ফিরে যান
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/start")}
+              aria-label="বন্ধ করুন"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 focus:outline focus:outline-2 focus:outline-rose-500"
+            >
+              <X aria-hidden="true" className="h-5 w-5" />
+            </button>
+          </div>
+          <h1 className="mt-6 text-3xl font-black">শুরু করার আগে</h1>
           <div className="mt-6 grid gap-3">
             {[
               [Clock, "প্রায় এক মিনিট লাগবে"],

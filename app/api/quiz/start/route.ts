@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { getFirstAssessmentDatabaseProblemType } from "@/lib/assessment/problem-type";
 import { errorResponse, jsonResponse } from "@/lib/api";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { startQuizSchema } from "@/lib/validation";
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     const sessionToken = randomUUID();
     const { error } = await supabaseAdmin.from("quiz_sessions").insert({
       session_token: sessionToken,
-      problem_type: parsed.data.problemType,
+      problem_type: getFirstAssessmentDatabaseProblemType(),
       status: "started",
     });
 

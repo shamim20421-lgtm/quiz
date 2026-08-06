@@ -44,6 +44,16 @@ describe("quiz interest page", () => {
     expect(screen.queryByText("প্রশ্ন ১ / ১০")).toBeNull();
   });
 
+  it("lets users leave the introduction screen", () => {
+    render(<QuizInterestPage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "ফিরে যান" }));
+    expect(push).toHaveBeenCalledWith("/start");
+
+    fireEvent.click(screen.getByRole("button", { name: "বন্ধ করুন" }));
+    expect(push).toHaveBeenCalledWith("/start");
+  });
+
   it("automatically progresses after a successful save", async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,
