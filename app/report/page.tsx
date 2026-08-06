@@ -63,7 +63,7 @@ export default function ReportPage() {
         ) : null}
         {report ? (
           <>
-            <h1 className="text-3xl font-black text-white">আপনার পূর্ণ রিপোর্ট</h1>
+            <h1 className="text-3xl font-black text-white">❤️ আপনার জন্য করণীয়</h1>
             <ReportSection title="আপনার পরিস্থিতির সারাংশ"><p>{report.full_summary}</p></ReportSection>
             <ReportSection title="যোগাযোগের বর্তমান ধরন"><p>{report.communication_pattern}</p></ReportSection>
             <ReportSection title="সম্ভাব্য কারণগুলো"><ul className="list-disc space-y-2 pl-5">{report.possible_reasons.map((item) => <li key={item}>{item}</li>)}</ul></ReportSection>

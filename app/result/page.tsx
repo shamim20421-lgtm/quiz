@@ -73,7 +73,7 @@ export default function ResultPage() {
         <p className="mt-5 text-sm leading-6 text-slate-600">{disclaimer}</p>
         <p className="mt-3 text-sm leading-6 text-slate-600">{safetyMessage}</p>
         <Link href="/premium" className="mt-7 block min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
-          বিস্তারিত ব্যক্তিগত রিপোর্ট দেখুন
+          ❤️ আপনার জন্য করণীয় দেখুন
         </Link>
         <button type="button" onClick={() => { clearSession(); router.push("/start"); }} className="mt-4 w-full rounded-full px-5 py-3 font-semibold text-rose-700 underline focus:outline focus:outline-2 focus:outline-rose-500">
           আবার যাচাই করুন

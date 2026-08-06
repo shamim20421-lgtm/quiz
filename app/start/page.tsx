@@ -1,18 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowRight, MessageSquareText } from "lucide-react";
+import { ArrowRight, Clock3, MessageSquareText } from "lucide-react";
 import { useState } from "react";
 import { useSessionState } from "@/lib/session-context";
 import type { ProblemType } from "@/lib/types";
 
-const problems: { label: string; type: ProblemType; direct?: boolean }[] = [
-  { label: "সে আগের মতো বার্তা পাঠায় না", type: "not_texting" },
-  { label: "সে উত্তর দিতে দেরি করে", type: "late_reply" },
-  { label: "সে কি আগ্রহ হারাচ্ছে?", type: "losing_interest" },
-  { label: "সে আমাকে এড়িয়ে চলছে", type: "avoiding_me" },
-  { label: "ঝগড়ার পর কী করব?", type: "after_fight" },
-  { label: "কী বার্তা পাঠাব?", type: "message_help", direct: true },
+const problems: { icon: string; label: string; detail: string; tag: string; type: ProblemType; direct?: boolean }[] = [
+  { icon: "💬", label: "আগে নিজেই মেসেজ করত...", detail: "এখন আর করে না।", tag: "১ মিনিট", type: "not_texting" },
+  { icon: "📱", label: "সে ৮ ঘণ্টা পর রিপ্লাই দেয়।", detail: "আমি কি অপেক্ষা করব?", tag: "AI বিশ্লেষণ", type: "late_reply" },
+  { icon: "❤️", label: "সে বদলে গেছে।", detail: "কথায় আগের উষ্ণতা নেই।", tag: "১ মিনিট", type: "losing_interest" },
+  { icon: "↘", label: "সে আমাকে এড়িয়ে চলছে।", detail: "কথা বা দেখা করার সময় দিচ্ছে না।", tag: "AI বিশ্লেষণ", type: "avoiding_me" },
+  { icon: "…", label: "আমরা ঝগড়া করেছি।", detail: "এখন কীভাবে কথা শুরু করব?", tag: "১ মিনিট", type: "after_fight" },
+  { icon: "✍", label: "আমি কী লিখব?", detail: "তিনটি বাংলা বার্তা তৈরি করুন।", tag: "বার্তা", type: "message_help", direct: true },
 ];
 
 export default function StartPage() {
@@ -49,20 +49,26 @@ export default function StartPage() {
   return (
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
       <div className="mx-auto max-w-[520px]">
-        <p className="text-sm font-semibold text-rose-200">প্রথম যাচাই এখন চালু</p>
-        <h1 className="mt-3 text-3xl font-black text-white">আজ আপনার সমস্যাটা কী?</h1>
+        <p className="text-sm font-semibold text-rose-200">আপনার পাশে ছোট AI সহায়ক</p>
+        <h1 className="mt-3 text-3xl font-black text-white">❤️ আজ কী হয়েছে?</h1>
+        <p className="mt-3 leading-7 text-slate-300">যেটা আপনার পরিস্থিতির কাছাকাছি, সেটা বেছে নিন।</p>
         <div className="mt-7 grid gap-3">
-          {problems.map((problem, index) => (
+          {problems.map((problem) => (
             <button
               key={problem.type}
               type="button"
               disabled={loadingType !== null}
               onClick={() => void startProblem(problem)}
-              className="flex min-h-20 items-center justify-between gap-4 rounded-3xl border border-white/10 bg-white p-4 text-left font-bold text-slate-900 transition hover:border-rose-300 hover:bg-rose-50 focus:outline focus:outline-2 focus:outline-rose-300 disabled:cursor-wait disabled:opacity-70"
+              className="grid min-h-24 grid-cols-[2.5rem_1fr_auto] items-center gap-4 rounded-3xl border border-white/10 bg-white p-4 text-left text-slate-900 transition hover:border-rose-300 hover:bg-rose-50 focus:outline focus:outline-2 focus:outline-rose-300 disabled:cursor-wait disabled:opacity-70"
             >
-              <span>
-                {problem.label}
-                {index < 5 ? <span className="mt-1 block text-sm font-medium text-rose-700">Relationship Check</span> : null}
+              <span aria-hidden="true" className="text-2xl">{problem.icon}</span>
+              <span className="min-w-0">
+                <span className="block font-bold leading-6">{problem.label}</span>
+                <span className="mt-1 block text-sm font-medium leading-6 text-slate-600">{problem.detail}</span>
+                <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-1 text-xs font-bold text-rose-700">
+                  <Clock3 aria-hidden="true" className="h-3 w-3" />
+                  {problem.tag}
+                </span>
               </span>
               {problem.direct ? <MessageSquareText aria-hidden="true" className="h-5 w-5 text-rose-600" /> : <ArrowRight aria-hidden="true" className="h-5 w-5 text-rose-600" />}
             </button>
