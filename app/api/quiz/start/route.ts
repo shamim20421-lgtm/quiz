@@ -1,12 +1,13 @@
 import { randomUUID } from "crypto";
 import { errorResponse, jsonResponse } from "@/lib/api";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { startQuizSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   const parsed = startQuizSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return errorResponse("অনুরোধটি সঠিক নয়।", 400);
 
+  const supabaseAdmin = getSupabaseAdmin();
   const sessionToken = randomUUID();
   const { error } = await supabaseAdmin.from("quiz_sessions").insert({
     session_token: sessionToken,

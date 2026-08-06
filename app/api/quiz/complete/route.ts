@@ -1,6 +1,6 @@
 import { IncompleteAssessmentError, completeQuizWithClient } from "@/lib/assessment/complete";
 import { errorResponse, jsonResponse } from "@/lib/api";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { completeQuizSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
@@ -8,6 +8,7 @@ export async function POST(request: Request) {
   if (!parsed.success) return errorResponse("সেশনটি সঠিক নয়।", 400);
 
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const result = await completeQuizWithClient(supabaseAdmin, parsed.data.sessionToken);
     return jsonResponse(result);
   } catch (error) {

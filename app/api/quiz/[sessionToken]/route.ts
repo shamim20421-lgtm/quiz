@@ -1,12 +1,13 @@
 import { errorResponse, jsonResponse } from "@/lib/api";
 import { getReportTemplate } from "@/lib/assessment/reports";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type { ResultType } from "@/lib/types";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ sessionToken: string }> }) {
   const { sessionToken } = await params;
   if (!sessionToken || sessionToken.length < 12) return errorResponse("সেশনটি সঠিক নয়।", 400);
 
+  const supabaseAdmin = getSupabaseAdmin();
   const { data: session, error: sessionError } = await supabaseAdmin
     .from("quiz_sessions")
     .select("id, session_token, problem_type, status, score, result_type")

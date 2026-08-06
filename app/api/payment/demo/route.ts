@@ -1,11 +1,12 @@
 import { errorResponse, jsonResponse } from "@/lib/api";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { demoPaymentSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   const parsed = demoPaymentSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return errorResponse("পেমেন্ট তথ্য সঠিক নয়।", 400);
 
+  const supabaseAdmin = getSupabaseAdmin();
   const { data: session, error: sessionError } = await supabaseAdmin
     .from("quiz_sessions")
     .select("id")

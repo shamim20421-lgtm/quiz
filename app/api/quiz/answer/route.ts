@@ -1,13 +1,14 @@
 import { assessmentQuestions } from "@/lib/assessment/questions";
 import { buildAnswerRecord } from "@/lib/assessment/answer-record";
 import { errorResponse, jsonResponse } from "@/lib/api";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { answerSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   const parsed = answerSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return errorResponse("উত্তরটি সঠিকভাবে পাঠানো হয়নি।", 400);
 
+  const supabaseAdmin = getSupabaseAdmin();
   const { data: session, error: sessionError } = await supabaseAdmin
     .from("quiz_sessions")
     .select("id")

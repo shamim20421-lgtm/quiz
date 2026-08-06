@@ -1,6 +1,6 @@
 import { generateMessages, toneLabels } from "@/lib/messages/generator";
 import { errorResponse, jsonResponse } from "@/lib/api";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { messageGenerateSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
@@ -9,6 +9,7 @@ export async function POST(request: Request) {
 
   const messages = generateMessages(parsed.data);
   let quizSessionId: string | null = null;
+  const supabaseAdmin = getSupabaseAdmin();
 
   if (parsed.data.sessionToken) {
     const { data: session } = await supabaseAdmin.from("quiz_sessions").select("id").eq("session_token", parsed.data.sessionToken).maybeSingle();
