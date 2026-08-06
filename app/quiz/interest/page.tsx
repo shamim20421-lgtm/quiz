@@ -108,19 +108,17 @@ export default function QuizInterestPage() {
 
   return (
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
-      <section className="mx-auto max-w-[520px] rounded-3xl bg-[#fff8fb] p-5 text-slate-900">
-        <div className="flex items-start gap-3">
-          <div className="min-w-0 flex-1 pt-4">
-            <ProgressBar value={index + 1} max={assessmentQuestions.length} />
-          </div>
-          <button
-            type="button"
-            onClick={() => router.push("/start")}
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-rose-200 bg-white px-4 font-bold text-rose-700 focus:outline focus:outline-2 focus:outline-rose-500"
-          >
-            <X aria-hidden="true" className="h-5 w-5" />
-            বন্ধ করুন
-          </button>
+      <section className="relative mx-auto max-w-[520px] rounded-3xl bg-[#fff8fb] p-5 text-slate-900">
+        <button
+          type="button"
+          onClick={() => router.push("/start")}
+          className="absolute right-5 top-5 inline-flex min-h-11 items-center gap-2 rounded-full border border-rose-200 bg-white px-4 font-bold text-rose-700 shadow-sm focus:outline focus:outline-2 focus:outline-rose-500"
+        >
+          <X aria-hidden="true" className="h-5 w-5" />
+          বন্ধ করুন
+        </button>
+        <div className="pr-32 pt-4">
+          <ProgressBar value={index + 1} max={assessmentQuestions.length} />
         </div>
         <p className="mt-4 text-sm font-bold text-rose-700">{toBanglaNumber(progressPercent)}% সম্পন্ন</p>
         <p className="sr-only">প্রশ্ন {toBanglaNumber(index + 1)}, মোট ১০টি প্রশ্ন</p>
