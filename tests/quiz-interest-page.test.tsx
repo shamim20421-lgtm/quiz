@@ -47,7 +47,7 @@ describe("quiz interest page", () => {
   it("lets users close the active quiz and return to start", () => {
     render(<QuizInterestPage />);
     fireEvent.click(screen.getByRole("button", { name: "শুরু করুন" }));
-    fireEvent.click(screen.getByRole("button", { name: "যাচাই বন্ধ করুন" }));
+    fireEvent.click(screen.getByRole("button", { name: "বন্ধ করুন" }));
 
     expect(push).toHaveBeenCalledWith("/start");
   });

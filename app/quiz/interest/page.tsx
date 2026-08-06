@@ -116,10 +116,10 @@ export default function QuizInterestPage() {
           <button
             type="button"
             onClick={() => router.push("/start")}
-            aria-label="যাচাই বন্ধ করুন"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 focus:outline focus:outline-2 focus:outline-rose-500"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-rose-200 bg-white px-4 font-bold text-rose-700 focus:outline focus:outline-2 focus:outline-rose-500"
           >
             <X aria-hidden="true" className="h-5 w-5" />
+            বন্ধ করুন
           </button>
         </div>
         <p className="mt-4 text-sm font-bold text-rose-700">{toBanglaNumber(progressPercent)}% সম্পন্ন</p>
