@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ButtonSpinner } from "@/components/button-spinner";
 import { LoadingState } from "@/components/loading-state";
 import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
@@ -14,12 +15,15 @@ export default function AnalyzingPage() {
   const [line, setLine] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const completingRef = useRef(false);
 
   async function complete() {
+    if (completingRef.current) return;
     if (!sessionToken) {
       router.replace("/start");
       return;
     }
+    completingRef.current = true;
     setError("");
     setLoading(true);
     const delay = new Promise((resolve) => setTimeout(resolve, 3000));
@@ -35,8 +39,10 @@ export default function AnalyzingPage() {
       trackEvent("quiz_completed", { result_type: data.resultType, score: data.score });
       router.push("/result");
     } catch {
-      setError("ফলাফল তৈরি করা যায়নি। আবার চেষ্টা করুন।");
+      setError("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");
       setLoading(false);
+    } finally {
+      completingRef.current = false;
     }
   }
 
@@ -50,12 +56,19 @@ export default function AnalyzingPage() {
   return (
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
       <div className="mx-auto max-w-[520px]">
-        {loading ? <LoadingState title="আপনার উত্তর বিশ্লেষণ করা হচ্ছে..." text={rotating[line]} /> : null}
+        {loading ? <LoadingState title="বিশ্লেষণ করা হচ্ছে..." text={rotating[line]} /> : null}
         {error ? (
           <div className="rounded-3xl bg-white p-6 text-center text-slate-900">
             <p aria-live="polite" className="font-semibold text-rose-700">{error}</p>
-            <button type="button" onClick={() => void complete()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-semibold text-white focus:outline focus:outline-2 focus:outline-rose-500">
-              আবার চেষ্টা করুন
+            <button type="button" disabled={loading} onClick={() => void complete()} className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-rose-500 px-5 font-semibold text-white focus:outline focus:outline-2 focus:outline-rose-500 disabled:cursor-wait disabled:opacity-70" aria-busy={loading}>
+              {loading ? (
+                <>
+                  <ButtonSpinner />
+                  বিশ্লেষণ করা হচ্ছে...
+                </>
+              ) : (
+                "আবার চেষ্টা করুন"
+              )}
             </button>
           </div>
         ) : null}

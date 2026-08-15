@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowRight, Clock3, MessageSquareText } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BanglaNumberText } from "@/components/bangla-number-text";
+import { ButtonSpinner } from "@/components/button-spinner";
 import { ErrorDialog } from "@/components/error-dialog";
 import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
@@ -24,14 +25,17 @@ export default function StartPage() {
   const [loadingType, setLoadingType] = useState<ProblemType | null>(null);
   const [error, setError] = useState("");
   const [retryProblem, setRetryProblem] = useState<{ type: ProblemType; direct?: boolean } | null>(null);
+  const startingRef = useRef(false);
 
   async function startProblem(problem: { type: ProblemType; direct?: boolean }) {
+    if (loadingType !== null || startingRef.current) return;
     setError("");
     if (problem.direct) {
       router.push("/message");
       return;
     }
 
+    startingRef.current = true;
     setLoadingType(problem.type);
     setRetryProblem(problem);
     try {
@@ -46,8 +50,9 @@ export default function StartPage() {
       trackEvent("quiz_started", { problem_type: data.problemType ?? problem.type });
       router.push("/quiz/interest");
     } catch {
-      setError("যাচাই শুরু করা যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।");
+      setError("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");
     } finally {
+      startingRef.current = false;
       setLoadingType(null);
     }
   }
@@ -79,7 +84,14 @@ export default function StartPage() {
                 </span>
                 <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-700">
                   <Clock3 aria-hidden="true" className="h-3 w-3" />
-                  {isLoading ? "শুরু হচ্ছে..." : <BanglaNumberText text={problem.tag} />}
+                  {isLoading ? (
+                    <>
+                      <ButtonSpinner />
+                      শুরু হচ্ছে...
+                    </>
+                  ) : (
+                    <BanglaNumberText text={problem.tag} />
+                  )}
                 </span>
               </span>
               {problem.direct ? <MessageSquareText aria-hidden="true" className="h-5 w-5 text-rose-600" /> : <ArrowRight aria-hidden="true" className="h-5 w-5 text-rose-600" />}

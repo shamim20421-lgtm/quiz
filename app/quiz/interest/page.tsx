@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Clock, FileText, RotateCcw, ShieldCheck, X } from "lucide-react";
 import { AnswerOption } from "@/components/answer-option";
@@ -24,6 +24,7 @@ export default function QuizInterestPage() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [retryAnswerKey, setRetryAnswerKey] = useState<string | null>(null);
+  const savingRef = useRef(false);
   const question = assessmentQuestions[index];
   const progressPercent = Math.round(((index + 1) / assessmentQuestions.length) * 100);
 
@@ -32,7 +33,9 @@ export default function QuizInterestPage() {
   }, [router, sessionToken]);
 
   async function choose(answerKey: string) {
+    if (saving || savingRef.current) return;
     if (!sessionToken) return;
+    savingRef.current = true;
     setSaving(true);
     setSaved(false);
     setError("");
@@ -58,6 +61,7 @@ export default function QuizInterestPage() {
       setSaved(false);
       setError("উত্তরটি সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -136,7 +140,7 @@ export default function QuizInterestPage() {
         </h1>
         <div className="mt-6 grid gap-3">
           {question.answers.map((answer) => (
-            <AnswerOption key={answer.key} text={answer.text} selected={answers[question.key] === answer.key} disabled={saving} onSelect={() => void choose(answer.key)} />
+            <AnswerOption key={answer.key} text={answer.text} selected={answers[question.key] === answer.key} disabled={saving} loading={saving && retryAnswerKey === answer.key} onSelect={() => void choose(answer.key)} />
           ))}
         </div>
         <div className="mt-5 flex items-center justify-between gap-3">
@@ -166,8 +170,8 @@ export default function QuizInterestPage() {
             <div>
               <p>{error}</p>
               {retryAnswerKey ? (
-                <button type="button" onClick={() => void choose(retryAnswerKey)} className="mt-2 underline">
-                  আবার চেষ্টা করুন
+                <button type="button" disabled={saving} onClick={() => void choose(retryAnswerKey)} className="mt-2 underline disabled:cursor-wait disabled:opacity-70" aria-busy={saving}>
+                  {saving ? "সংরক্ষণ হচ্ছে..." : "আবার চেষ্টা করুন"}
                 </button>
               ) : null}
             </div>

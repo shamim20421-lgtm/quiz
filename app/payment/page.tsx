@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ButtonSpinner } from "@/components/button-spinner";
 import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
 
@@ -12,6 +13,7 @@ export default function PaymentPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const trackedPaymentView = useRef(false);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (trackedPaymentView.current) return;
@@ -21,10 +23,12 @@ export default function PaymentPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (loading || submittingRef.current) return;
     if (!sessionToken) {
       router.push("/start");
       return;
     }
+    submittingRef.current = true;
     const form = new FormData(event.currentTarget);
     setLoading(true);
     setError("");
@@ -44,6 +48,7 @@ export default function PaymentPage() {
     } catch {
       setError("তথ্য সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   }
@@ -86,8 +91,15 @@ export default function PaymentPage() {
           </label>
         </div>
         <p aria-live="polite" className="mt-4 min-h-6 text-sm font-semibold text-rose-700">{error}</p>
-        <button disabled={loading} className="mt-3 min-h-14 w-full rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500 disabled:opacity-70">
-          {loading ? "সংরক্ষণ হচ্ছে..." : "আগাম অ্যাক্সেস চাই"}
+        <button disabled={loading} className="mt-3 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500 disabled:cursor-wait disabled:opacity-70" aria-busy={loading}>
+          {loading ? (
+            <>
+              <ButtonSpinner />
+              সংরক্ষণ করা হচ্ছে...
+            </>
+          ) : (
+            "আগাম অ্যাক্সেস চাই"
+          )}
         </button>
       </form>
     </div>

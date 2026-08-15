@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ButtonSpinner } from "@/components/button-spinner";
 import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
 import type { Tone } from "@/lib/types";
@@ -20,6 +21,7 @@ export default function MessagePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const trackedMessageGeneratorOpened = useRef(false);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (trackedMessageGeneratorOpened.current) return;
@@ -29,6 +31,8 @@ export default function MessagePage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (loading || submittingRef.current) return;
+    submittingRef.current = true;
     const form = new FormData(event.currentTarget);
     setLoading(true);
     setError("");
@@ -51,6 +55,7 @@ export default function MessagePage() {
     } catch {
       setError("বার্তা তৈরি করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   }
@@ -87,8 +92,15 @@ export default function MessagePage() {
           </fieldset>
         </div>
         <p aria-live="polite" className="mt-4 min-h-6 text-sm font-semibold text-rose-700">{error}</p>
-        <button disabled={loading} className="mt-3 min-h-14 w-full rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500 disabled:opacity-70">
-          {loading ? "তৈরি হচ্ছে..." : "তিনটি বার্তা তৈরি করুন"}
+        <button disabled={loading} className="mt-3 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500 disabled:cursor-wait disabled:opacity-70" aria-busy={loading}>
+          {loading ? (
+            <>
+              <ButtonSpinner />
+              বার্তা তৈরি হচ্ছে...
+            </>
+          ) : (
+            "তিনটি বার্তা তৈরি করুন"
+          )}
         </button>
       </form>
     </div>

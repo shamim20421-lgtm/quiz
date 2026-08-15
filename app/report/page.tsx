@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ButtonSpinner } from "@/components/button-spinner";
 import { LoadingState } from "@/components/loading-state";
 import { BanglaNumberText } from "@/components/bangla-number-text";
 import { ReportSection } from "@/components/report-section";
@@ -25,12 +26,17 @@ export default function ReportPage() {
   const { sessionToken } = useSessionState();
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const loadingRef = useRef(false);
 
   async function load() {
+    if (loadingRef.current) return;
     if (!sessionToken) {
       router.replace("/start");
       return;
     }
+    loadingRef.current = true;
+    setLoading(true);
     setError("");
     try {
       const response = await fetch(`/api/quiz/${sessionToken}`);
@@ -42,7 +48,10 @@ export default function ReportPage() {
       }
       setReport(payload.report);
     } catch {
-      setError("রিপোর্ট দেখানো যায়নি। আবার চেষ্টা করুন।");
+      setError("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+    } finally {
+      loadingRef.current = false;
+      setLoading(false);
     }
   }
 
@@ -51,7 +60,7 @@ export default function ReportPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionToken]);
 
-  if (!report && !error) return <div className="mx-auto max-w-[520px] px-4 py-8"><LoadingState title="রিপোর্ট আনা হচ্ছে..." /></div>;
+  if (loading && !report && !error) return <div className="mx-auto max-w-[520px] px-4 py-8"><LoadingState title="রিপোর্ট আনা হচ্ছে..." /></div>;
 
   return (
     <div className="px-4 py-8">
@@ -59,7 +68,16 @@ export default function ReportPage() {
         {error ? (
           <div className="rounded-3xl bg-white p-6 text-center text-slate-900">
             <p aria-live="polite" className="font-semibold text-rose-700">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-semibold text-white">আবার চেষ্টা করুন</button>
+            <button type="button" disabled={loading} onClick={() => void load()} className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-rose-500 px-5 font-semibold text-white disabled:cursor-wait disabled:opacity-70" aria-busy={loading}>
+              {loading ? (
+                <>
+                  <ButtonSpinner />
+                  বিশ্লেষণ করা হচ্ছে...
+                </>
+              ) : (
+                "আবার চেষ্টা করুন"
+              )}
+            </button>
           </div>
         ) : null}
         {report ? (

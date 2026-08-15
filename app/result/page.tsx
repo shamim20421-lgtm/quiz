@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { disclaimer, safetyMessage } from "@/components/site-footer";
+import { ButtonSpinner } from "@/components/button-spinner";
 import { LoadingState } from "@/components/loading-state";
 import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
@@ -19,12 +20,17 @@ export default function ResultPage() {
   const [data, setData] = useState<ResultData | null>(null);
   const [error, setError] = useState("");
   const trackedResultView = useRef<string | null>(null);
+  const loadingRef = useRef(false);
+  const [loading, setLoading] = useState(true);
 
   async function load() {
+    if (loadingRef.current) return;
     if (!sessionToken) {
       router.replace("/start");
       return;
     }
+    loadingRef.current = true;
+    setLoading(true);
     setError("");
     try {
       const response = await fetch(`/api/quiz/${sessionToken}`);
@@ -36,7 +42,10 @@ export default function ResultPage() {
         trackEvent("result_viewed", { result_type: payload.session.result_type });
       }
     } catch {
-      setError("ফলাফল দেখানো যায়নি। আবার চেষ্টা করুন।");
+      setError("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+    } finally {
+      loadingRef.current = false;
+      setLoading(false);
     }
   }
 
@@ -45,7 +54,7 @@ export default function ResultPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionToken]);
 
-  if (!data && !error) {
+  if (loading && !data && !error) {
     return <div className="mx-auto max-w-[520px] px-4 py-8"><LoadingState title="ফলাফল আনা হচ্ছে..." /></div>;
   }
 
@@ -54,7 +63,16 @@ export default function ResultPage() {
       <div className="mx-auto max-w-[520px] px-4 py-8">
         <div className="rounded-3xl bg-white p-6 text-center text-slate-900">
           <p aria-live="polite" className="font-semibold text-rose-700">{error}</p>
-          <button type="button" onClick={() => void load()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-semibold text-white">আবার চেষ্টা করুন</button>
+          <button type="button" disabled={loading} onClick={() => void load()} className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-rose-500 px-5 font-semibold text-white disabled:cursor-wait disabled:opacity-70" aria-busy={loading}>
+            {loading ? (
+              <>
+                <ButtonSpinner />
+                বিশ্লেষণ করা হচ্ছে...
+              </>
+            ) : (
+              "আবার চেষ্টা করুন"
+            )}
+          </button>
         </div>
       </div>
     );
