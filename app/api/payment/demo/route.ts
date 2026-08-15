@@ -15,33 +15,34 @@ export async function POST(request: Request) {
 
   if (sessionError || !session) return errorResponse("সেশন পাওয়া যায়নি।", 404);
 
+  const transactionId = parsed.data.transactionId ?? `early-access-${session.id}`;
   const paymentPayloads: Record<string, unknown>[] = [
     {
       quiz_session_id: session.id,
       payer_name: parsed.data.name,
       mobile_number: parsed.data.mobileNumber,
-      transaction_id: parsed.data.transactionId,
+      transaction_id: transactionId,
       status: "paid",
     },
     {
       quiz_session_id: session.id,
       payer_name: parsed.data.name,
       phone_number: parsed.data.mobileNumber,
-      transaction_id: parsed.data.transactionId,
+      transaction_id: transactionId,
       status: "paid",
     },
     {
       quiz_session_id: session.id,
       name: parsed.data.name,
       phone_number: parsed.data.mobileNumber,
-      transaction_id: parsed.data.transactionId,
+      transaction_id: transactionId,
       status: "paid",
     },
     {
       quiz_session_id: session.id,
       name: parsed.data.name,
       mobile: parsed.data.mobileNumber,
-      transaction_id: parsed.data.transactionId,
+      transaction_id: transactionId,
       status: "paid",
     },
     {

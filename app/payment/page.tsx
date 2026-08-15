@@ -10,6 +10,7 @@ export default function PaymentPage() {
   const { sessionToken } = useSessionState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const trackedPaymentView = useRef(false);
 
   useEffect(() => {
@@ -35,17 +36,31 @@ export default function PaymentPage() {
           sessionToken,
           name: form.get("name"),
           mobileNumber: form.get("mobileNumber"),
-          transactionId: form.get("transactionId"),
         }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      router.push("/report");
+      setSuccess(true);
     } catch {
-      setError("ডেমো পেমেন্ট সম্পন্ন হয়নি। আবার চেষ্টা করুন।");
+      setError("তথ্য সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
+        <section className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-center text-slate-900">
+          <h1 className="text-3xl font-black">ধন্যবাদ ❤️</h1>
+          <p className="mt-3 leading-7 text-slate-600">আপনার তথ্য সংরক্ষণ করা হয়েছে।</p>
+          <p className="mt-1 leading-7 text-slate-600">আমরা চালু হলে আপনাকে জানানো হবে।</p>
+          <button type="button" onClick={() => router.push("/")} className="mt-7 min-h-14 w-full rounded-full bg-rose-500 px-5 font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
+            হোমে ফিরে যান
+          </button>
+        </section>
+      </div>
+    );
   }
 
   return (
@@ -53,7 +68,7 @@ export default function PaymentPage() {
       <form onSubmit={submit} className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-slate-900">
         <p className="text-sm font-bold text-rose-700">পরীক্ষামূলক ধাপ</p>
         <h1 className="mt-2 text-3xl font-black">ডেমো পেমেন্ট</h1>
-        <p className="mt-3 leading-7 text-slate-600">পরীক্ষার সময় কোনো বাস্তব টাকা কাটা হবে না। কার্ডের তথ্য প্রয়োজন নেই।</p>
+        <p className="mt-3 leading-7 text-slate-600">এটি পরীক্ষামূলক ধাপ। কোনো বাস্তব টাকা কাটা হবে না।</p>
         <div className="mt-6 grid gap-4">
           <label className="grid gap-2 font-semibold">
             নাম
@@ -62,16 +77,16 @@ export default function PaymentPage() {
           <label className="grid gap-2 font-semibold">
             মোবাইল নম্বর
             <input name="mobileNumber" required className="min-h-12 rounded-2xl border border-slate-300 px-4 focus:outline focus:outline-2 focus:outline-rose-500" />
-            <span className="text-sm font-medium leading-6 text-slate-500">আপনার নম্বর শুধু এই পরীক্ষামূলক পেমেন্ট যাচাইয়ের জন্য ব্যবহৃত হবে।</span>
+            <span className="text-sm font-medium leading-6 text-slate-500">আপনার নম্বর শুধু আগাম অ্যাক্সেস ও পরীক্ষামূলক যোগাযোগের জন্য ব্যবহার হবে।</span>
           </label>
           <label className="grid gap-2 font-semibold">
-            লেনদেন নম্বর
-            <input name="transactionId" required className="min-h-12 rounded-2xl border border-slate-300 px-4 focus:outline focus:outline-2 focus:outline-rose-500" />
+            আপনার মতামত (ঐচ্ছিক)
+            <textarea name="feedback" rows={4} className="rounded-2xl border border-slate-300 p-4 leading-7 focus:outline focus:outline-2 focus:outline-rose-500" />
           </label>
         </div>
         <p aria-live="polite" className="mt-4 min-h-6 text-sm font-semibold text-rose-700">{error}</p>
         <button disabled={loading} className="mt-3 min-h-14 w-full rounded-full bg-rose-500 px-5 font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500 disabled:opacity-70">
-          {loading ? "সম্পন্ন হচ্ছে..." : "ডেমো পেমেন্ট সম্পন্ন করুন"}
+          {loading ? "সংরক্ষণ হচ্ছে..." : "আগাম অ্যাক্সেস চাই"}
         </button>
       </form>
     </div>

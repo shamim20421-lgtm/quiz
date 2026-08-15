@@ -29,7 +29,7 @@ export const demoPaymentSchema = z.object({
   sessionToken: z.string().min(12).max(200),
   name: z.string().trim().min(1).max(120),
   mobileNumber: z.string().trim().min(6).max(30),
-  transactionId: z.string().trim().min(3).max(80),
+  transactionId: z.string().trim().min(3).max(80).optional(),
 });
 
 export const messageGenerateSchema = z.object({
