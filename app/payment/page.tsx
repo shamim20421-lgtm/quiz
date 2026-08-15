@@ -121,6 +121,7 @@ export default function PaymentPage() {
           sessionToken,
           name: form.get("name"),
           mobileNumber: form.get("mobileNumber"),
+          feedback: form.get("feedback"),
         }),
       });
       const data = await response.json();
@@ -128,8 +129,8 @@ export default function PaymentPage() {
       trackEvent("early_access_submitted");
       setSuccessVisible(false);
       setSuccess(true);
-    } catch {
-      setError("তথ্য সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
+    } catch (error) {
+      setError(error instanceof Error && error.message === "সঠিক মোবাইল নম্বর দিন।" ? error.message : "তথ্য সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
       submittingRef.current = false;
       setLoading(false);

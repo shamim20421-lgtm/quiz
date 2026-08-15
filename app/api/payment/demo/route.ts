@@ -1,10 +1,13 @@
 import { errorResponse, jsonResponse } from "@/lib/api";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
-import { demoPaymentSchema } from "@/lib/validation";
+import { earlyAccessSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
-  const parsed = demoPaymentSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return errorResponse("পেমেন্ট তথ্য সঠিক নয়।", 400);
+  const parsed = earlyAccessSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) {
+    const hasInvalidMobile = parsed.error.issues.some((issue) => issue.message === "INVALID_MOBILE");
+    return errorResponse(hasInvalidMobile ? "সঠিক মোবাইল নম্বর দিন।" : "তথ্য সঠিক নয়।", 400);
+  }
 
   const supabaseAdmin = getSupabaseAdmin();
   const { data: session, error: sessionError } = await supabaseAdmin
@@ -15,65 +18,17 @@ export async function POST(request: Request) {
 
   if (sessionError || !session) return errorResponse("সেশন পাওয়া যায়নি।", 404);
 
-  const transactionId = parsed.data.transactionId ?? `early-access-${session.id}`;
-  const paymentPayloads: Record<string, unknown>[] = [
-    {
-      quiz_session_id: session.id,
-      payer_name: parsed.data.name,
-      mobile_number: parsed.data.mobileNumber,
-      transaction_id: transactionId,
-      status: "paid",
-    },
-    {
-      quiz_session_id: session.id,
-      payer_name: parsed.data.name,
-      phone_number: parsed.data.mobileNumber,
-      transaction_id: transactionId,
-      status: "paid",
-    },
-    {
-      quiz_session_id: session.id,
-      name: parsed.data.name,
-      phone_number: parsed.data.mobileNumber,
-      transaction_id: transactionId,
-      status: "paid",
-    },
-    {
-      quiz_session_id: session.id,
-      name: parsed.data.name,
-      mobile: parsed.data.mobileNumber,
-      transaction_id: transactionId,
-      status: "paid",
-    },
-    {
-      quiz_session_id: session.id,
-      status: "paid",
-    },
-  ];
+  const { error } = await supabaseAdmin.from("early_access_leads").insert({
+    quiz_session_id: session.id,
+    name: parsed.data.name,
+    mobile: parsed.data.mobileNumber,
+    feedback: parsed.data.feedback || null,
+  });
 
-  let paymentError: unknown = null;
-  for (const payload of paymentPayloads) {
-    const upsertResult = await supabaseAdmin.from("payments").upsert(payload, { onConflict: "quiz_session_id" });
-    if (!upsertResult.error) {
-      paymentError = null;
-      break;
-    }
-    paymentError = upsertResult.error;
-    const insertResult = await supabaseAdmin.from("payments").insert(payload);
-    paymentError = insertResult.error;
-    if (!insertResult.error) {
-      paymentError = null;
-      break;
-    }
+  if (error) {
+    console.error("early_access_leads insert failed", error);
+    return errorResponse("তথ্য সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।", 500);
   }
-
-  if (paymentError) {
-    console.error("payments upsert failed", paymentError);
-    return errorResponse("ডেমো পেমেন্ট সংরক্ষণ করা যায়নি।", 500);
-  }
-
-  await supabaseAdmin.from("reports").update({ is_unlocked: true }).eq("quiz_session_id", session.id);
-  await supabaseAdmin.from("quiz_sessions").update({ status: "report_unlocked" }).eq("id", session.id);
 
   return jsonResponse({ success: true });
 }

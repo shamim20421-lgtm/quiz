@@ -25,11 +25,23 @@ export const completeQuizSchema = z.object({
   sessionToken: z.string().min(12).max(200),
 });
 
-export const demoPaymentSchema = z.object({
+function normalizeBangladeshMobile(value: string) {
+  const normalized = value.trim().replace(/[\s-]/g, "");
+  if (/^01[3-9]\d{8}$/.test(normalized)) return normalized;
+  if (/^\+8801[3-9]\d{8}$/.test(normalized)) return `0${normalized.slice(4)}`;
+  if (/^8801[3-9]\d{8}$/.test(normalized)) return `0${normalized.slice(3)}`;
+  return normalized;
+}
+
+export const earlyAccessSchema = z.object({
   sessionToken: z.string().min(12).max(200),
-  name: z.string().trim().min(1).max(120),
-  mobileNumber: z.string().trim().min(6).max(30),
-  transactionId: z.string().trim().min(3).max(80).optional(),
+  name: z.string().trim().min(2).max(100),
+  mobileNumber: z
+    .string()
+    .trim()
+    .transform(normalizeBangladeshMobile)
+    .refine((value) => /^01[3-9]\d{8}$/.test(value), { message: "INVALID_MOBILE" }),
+  feedback: z.string().trim().max(1000).optional(),
 });
 
 export const messageGenerateSchema = z.object({
