@@ -31,7 +31,7 @@ export default function PaymentPage() {
   useEffect(() => {
     if (trackedPaymentView.current) return;
     trackedPaymentView.current = true;
-    trackEvent("payment_viewed");
+    trackEvent("early_access_form_viewed");
   }, []);
 
   useEffect(() => {
@@ -87,10 +87,12 @@ export default function PaymentPage() {
           text: "আপনার সম্পর্কের পরিস্থিতি ১ মিনিটে বুঝে দেখুন।",
           url: shareUrl,
         });
+        trackEvent("share_clicked", { location: "thank_you" });
         return;
       }
 
       await copyShareUrl();
+      trackEvent("share_clicked", { location: "thank_you" });
       showTemporaryShareStatus("লিংক কপি হয়েছে ✓");
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
@@ -123,6 +125,7 @@ export default function PaymentPage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
+      trackEvent("early_access_submitted");
       setSuccessVisible(false);
       setSuccess(true);
     } catch {
@@ -158,7 +161,7 @@ export default function PaymentPage() {
               </div>
             ))}
           </div>
-          <button type="button" onClick={() => router.push("/start")} className="mt-7 min-h-14 w-full rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
+          <button type="button" onClick={() => { trackEvent("return_home_clicked"); router.push("/start"); }} className="mt-7 min-h-14 w-full rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
             হোমে ফিরে যান
           </button>
           <button type="button" onClick={() => void shareWithFriend()} aria-label="আজকের সম্পর্ক বন্ধুর সঙ্গে শেয়ার করুন" className="mt-4 rounded-full px-5 py-3 text-sm font-semibold text-rose-700 underline focus:outline focus:outline-2 focus:outline-rose-500">

@@ -6,6 +6,7 @@ import { ArrowLeft, Clock, FileText, RotateCcw, ShieldCheck, X } from "lucide-re
 import { AnswerOption } from "@/components/answer-option";
 import { BanglaNumberText } from "@/components/bangla-number-text";
 import { ProgressBar } from "@/components/progress-bar";
+import { trackEvent } from "@/lib/analytics";
 import { assessmentQuestions } from "@/lib/assessment/questions";
 import { useSessionState } from "@/lib/session-context";
 
@@ -71,6 +72,10 @@ export default function QuizInterestPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       setAnswer(question.key, answerKey);
+      trackEvent("quiz_question_answered", {
+        question_number: index + 1,
+        progress_percent: progressPercent,
+      });
       setRetryAnswerKey(null);
       setSaved(true);
       await new Promise((resolve) => setTimeout(resolve, 225));

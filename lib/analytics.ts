@@ -9,6 +9,10 @@ declare global {
 }
 
 export function trackEvent(name: string, params?: AnalyticsParams) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[GA Event] ${name}`, params ?? {});
+  }
+
   if (typeof window === "undefined" || typeof window.gtag !== "function") return;
 
   window.gtag("event", name, params);

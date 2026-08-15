@@ -76,7 +76,11 @@ export default function AnalyzingPage() {
       const [response] = await Promise.all([responsePromise, processingDelay]);
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      trackEvent("quiz_completed", { result_type: data.resultType, score: data.score });
+      const trackedKey = `quiz_completed:${sessionToken}`;
+      if (sessionStorage.getItem(trackedKey) !== "true") {
+        sessionStorage.setItem(trackedKey, "true");
+        trackEvent("quiz_completed", { total_questions: 10 });
+      }
       router.push("/result");
     } catch {
       setError("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");

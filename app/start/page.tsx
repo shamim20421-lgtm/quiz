@@ -47,7 +47,11 @@ export default function StartPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       setSession(data.sessionToken, data.problemType);
-      trackEvent("quiz_started", { problem_type: data.problemType ?? problem.type });
+      const trackedKey = `quiz_started:${data.sessionToken}`;
+      if (sessionStorage.getItem(trackedKey) !== "true") {
+        sessionStorage.setItem(trackedKey, "true");
+        trackEvent("quiz_started", { source: "homepage" });
+      }
       router.push("/quiz/interest");
     } catch {
       setError("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");
