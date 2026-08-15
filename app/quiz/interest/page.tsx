@@ -22,6 +22,7 @@ export default function QuizInterestPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [retryAnswerKey, setRetryAnswerKey] = useState<string | null>(null);
   const question = assessmentQuestions[index];
   const progressPercent = Math.round(((index + 1) / assessmentQuestions.length) * 100);
 
@@ -34,6 +35,7 @@ export default function QuizInterestPage() {
     setSaving(true);
     setSaved(false);
     setError("");
+    setRetryAnswerKey(answerKey);
     try {
       const response = await fetch("/api/quiz/answer", {
         method: "POST",
@@ -43,6 +45,7 @@ export default function QuizInterestPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       setAnswer(question.key, answerKey);
+      setRetryAnswerKey(null);
       setSaved(true);
       await new Promise((resolve) => setTimeout(resolve, 400));
       if (index === assessmentQuestions.length - 1) router.push("/analyzing");
@@ -81,12 +84,13 @@ export default function QuizInterestPage() {
             </button>
           </div>
           <h1 className="mt-6 text-3xl font-black">শুরু করার আগে</h1>
+          <p className="mt-3 leading-7 text-slate-600">মাত্র ১০টি ছোট প্রশ্ন। আপনার পরিস্থিতি বুঝতে প্রায় ১ মিনিট লাগবে।</p>
           <div className="mt-6 grid gap-3">
             {[
-              [Clock, "প্রায় এক মিনিট লাগবে"],
-              [FileText, "দশটি প্রশ্ন"],
+              [Clock, "প্রায় ১ মিনিট"],
+              [FileText, "১০টি প্রশ্ন"],
               [ShieldCheck, "ব্যক্তিগত ফলাফল"],
-              [RotateCcw, "উত্তর পরিবর্তন করা যাবে"],
+              [RotateCcw, "আগের উত্তরে ফিরে যাওয়া যাবে"],
             ].map(([Icon, text]) => (
               <div key={String(text)} className="flex items-center gap-3 rounded-2xl border border-rose-100 p-4">
                 <Icon aria-hidden="true" className="h-5 w-5 text-rose-600" />
@@ -135,6 +139,7 @@ export default function QuizInterestPage() {
               onClick={() => {
                 setError("");
                 setSaved(false);
+                setRetryAnswerKey(null);
                 setIndex((current) => current - 1);
               }}
               className="inline-flex min-h-12 items-center gap-2 rounded-full border border-slate-300 px-4 font-semibold text-slate-800 focus:outline focus:outline-2 focus:outline-rose-500"
@@ -151,9 +156,14 @@ export default function QuizInterestPage() {
         </div>
         <div aria-live="polite" className="mt-3 min-h-6 text-sm font-semibold text-rose-700">
           {error ? (
-            <button type="button" onClick={() => setError("")} className="underline">
-              {error}
-            </button>
+            <div>
+              <p>{error}</p>
+              {retryAnswerKey ? (
+                <button type="button" onClick={() => void choose(retryAnswerKey)} className="mt-2 underline">
+                  আবার চেষ্টা করুন
+                </button>
+              ) : null}
+            </div>
           ) : null}
         </div>
       </section>

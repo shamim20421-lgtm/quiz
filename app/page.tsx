@@ -28,12 +28,12 @@ export default function HomePage() {
             <ShieldCheck aria-hidden="true" className="h-4 w-4" />
             সম্পর্ক সহায়ক
           </div>
-          <h1 className="text-4xl font-black leading-tight text-white sm:text-5xl">সে ২ দিন ধরে রিপ্লাই দিচ্ছে না?</h1>
-          <p className="mt-4 text-xl font-semibold leading-8 text-rose-100">এখন কী করবেন, ১ মিনিটে বুঝে নিন।</p>
-          <p className="mt-4 text-lg leading-8 text-slate-200">হয়তো সে ব্যস্ত... আবার হয়তো সম্পর্কে কিছু বদলেছে। অনুমান না করে, ১ মিনিটে নিজের পরিস্থিতি বুঝে নিন।</p>
+          <h1 className="text-4xl font-black leading-tight text-white sm:text-5xl">আজও কি তার রিপ্লাইয়ের অপেক্ষায় আছেন?</h1>
+          <p className="mt-4 text-xl font-semibold leading-8 text-rose-100">অনুমান নয়। মাত্র ১ মিনিটে বুঝুন এখন কী করা সবচেয়ে ভালো।</p>
+          <p className="mt-4 text-lg leading-8 text-slate-200">আপনার পরিস্থিতির ভিত্তিতে যোগাযোগের পরবর্তী পদক্ষেপ, কী লিখবেন এবং কী এড়িয়ে চলবেন—সব এক জায়গায় দেখুন।</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link className="rounded-full bg-rose-500 px-6 py-4 text-center font-bold text-white transition hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-200" href="/start">
-              ❤️ আমার পরিস্থিতি বুঝতে চাই
+              ❤️ এখন কী করব জানুন
             </Link>
           </div>
           <p className="mt-4 flex items-center gap-2 text-sm leading-6 text-slate-300">
