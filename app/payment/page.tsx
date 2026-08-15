@@ -13,6 +13,8 @@ const successCards = [
   "❤️ ধন্যবাদ আমাদের প্রথম ব্যবহারকারী হওয়ার জন্য",
 ];
 
+const shareUrl = "https://relationship.creatives71.com";
+
 export default function PaymentPage() {
   const router = useRouter();
   const { sessionToken } = useSessionState();
@@ -20,8 +22,11 @@ export default function PaymentPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [successVisible, setSuccessVisible] = useState(false);
+  const [shareStatus, setShareStatus] = useState("");
   const trackedPaymentView = useRef(false);
   const submittingRef = useRef(false);
+  const sharingRef = useRef(false);
+  const shareStatusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (trackedPaymentView.current) return;
@@ -34,6 +39,66 @@ export default function PaymentPage() {
     const frame = requestAnimationFrame(() => setSuccessVisible(true));
     return () => cancelAnimationFrame(frame);
   }, [success]);
+
+  useEffect(() => {
+    return () => {
+      if (shareStatusTimeoutRef.current) clearTimeout(shareStatusTimeoutRef.current);
+    };
+  }, []);
+
+  function showTemporaryShareStatus(message: string) {
+    setShareStatus(message);
+    if (shareStatusTimeoutRef.current) clearTimeout(shareStatusTimeoutRef.current);
+    shareStatusTimeoutRef.current = setTimeout(() => setShareStatus(""), 2000);
+  }
+
+  async function copyShareUrl() {
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(shareUrl);
+      return;
+    }
+
+    const textarea = document.createElement("textarea");
+    textarea.value = shareUrl;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.top = "-1000px";
+    textarea.style.left = "-1000px";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    try {
+      document.execCommand("copy");
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }
+
+  async function shareWithFriend() {
+    if (sharingRef.current) return;
+    sharingRef.current = true;
+    setShareStatus("");
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "আজকের সম্পর্ক",
+          text: "আপনার সম্পর্কের পরিস্থিতি ১ মিনিটে বুঝে দেখুন।",
+          url: shareUrl,
+        });
+        return;
+      }
+
+      await copyShareUrl();
+      showTemporaryShareStatus("লিংক কপি হয়েছে ✓");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setShareStatus("শেয়ার করা যায়নি। আবার চেষ্টা করুন।");
+    } finally {
+      sharingRef.current = false;
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,9 +161,10 @@ export default function PaymentPage() {
           <button type="button" onClick={() => router.push("/start")} className="mt-7 min-h-14 w-full rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
             হোমে ফিরে যান
           </button>
-          <button type="button" className="mt-4 rounded-full px-5 py-3 text-sm font-semibold text-rose-700 underline focus:outline focus:outline-2 focus:outline-rose-500">
+          <button type="button" onClick={() => void shareWithFriend()} aria-label="আজকের সম্পর্ক বন্ধুর সঙ্গে শেয়ার করুন" className="mt-4 rounded-full px-5 py-3 text-sm font-semibold text-rose-700 underline focus:outline focus:outline-2 focus:outline-rose-500">
             বন্ধুকে শেয়ার করুন
           </button>
+          <p aria-live="polite" className="mt-2 min-h-6 text-sm font-semibold text-rose-700">{shareStatus}</p>
         </section>
       </div>
     );
