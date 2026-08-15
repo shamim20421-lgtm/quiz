@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { disclaimer, safetyMessage } from "@/components/site-footer";
 import { LoadingState } from "@/components/loading-state";
+import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
 
 type ResultData = {
@@ -17,6 +18,7 @@ export default function ResultPage() {
   const { sessionToken, clearSession } = useSessionState();
   const [data, setData] = useState<ResultData | null>(null);
   const [error, setError] = useState("");
+  const trackedResultView = useRef<string | null>(null);
 
   async function load() {
     if (!sessionToken) {
@@ -29,6 +31,10 @@ export default function ResultPage() {
       const payload = await response.json();
       if (!response.ok || !payload.report) throw new Error(payload.error);
       setData(payload);
+      if (trackedResultView.current !== sessionToken) {
+        trackedResultView.current = sessionToken;
+        trackEvent("result_viewed", { result_type: payload.session.result_type });
+      }
     } catch {
       setError("ফলাফল দেখানো যায়নি। আবার চেষ্টা করুন।");
     }

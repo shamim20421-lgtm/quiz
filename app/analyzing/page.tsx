@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState } from "@/components/loading-state";
+import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
 
 const rotating = ["যোগাযোগের ধরন দেখা হচ্ছে", "আচরণের পরিবর্তন মিলিয়ে দেখা হচ্ছে", "আপনার জন্য পরবর্তী পদক্ষেপ তৈরি হচ্ছে"];
@@ -31,6 +32,7 @@ export default function AnalyzingPage() {
       const [response] = await Promise.all([responsePromise, delay]);
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
+      trackEvent("quiz_completed", { result_type: data.resultType, score: data.score });
       router.push("/result");
     } catch {
       setError("ফলাফল তৈরি করা যায়নি। আবার চেষ্টা করুন।");

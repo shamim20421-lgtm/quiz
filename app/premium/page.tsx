@@ -1,9 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { LockKeyhole } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 const items = ["আপনার পরিস্থিতির বিস্তারিত ব্যাখ্যা", "আজ কী করবেন", "আজ কী করবেন না", "আগামী তিন দিনের পরিকল্পনা", "সম্ভাব্য কারণগুলো", "তিনটি প্রস্তুত বাংলা বার্তা", "পরবর্তী কথোপকথনের দিকনির্দেশনা"];
 
 export default function PremiumPage() {
+  const trackedPremiumView = useRef(false);
+
+  useEffect(() => {
+    if (trackedPremiumView.current) return;
+    trackedPremiumView.current = true;
+    trackEvent("premium_viewed");
+  }, []);
+
   return (
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
       <section className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-slate-900">
@@ -17,7 +29,7 @@ export default function PremiumPage() {
             <div key={item} className="rounded-2xl border border-rose-100 p-4 font-semibold">{item}</div>
           ))}
         </div>
-        <Link href="/payment" className="mt-7 block min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
+        <Link href="/payment" className="mt-7 block min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500" onClick={() => trackEvent("premium_clicked")}>
           আমার করণীয় আনলক করুন
         </Link>
       </section>

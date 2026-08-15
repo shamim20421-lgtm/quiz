@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Clock3, MessageSquareText } from "lucide-react";
 import { useState } from "react";
 import { ErrorDialog } from "@/components/error-dialog";
+import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
 import type { ProblemType } from "@/lib/types";
 
@@ -41,6 +42,7 @@ export default function StartPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       setSession(data.sessionToken, data.problemType);
+      trackEvent("quiz_started", { problem_type: data.problemType ?? problem.type });
       router.push("/quiz/interest");
     } catch {
       setError("যাচাই শুরু করা যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।");

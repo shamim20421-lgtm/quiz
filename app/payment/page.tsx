@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
 
 export default function PaymentPage() {
@@ -9,6 +10,13 @@ export default function PaymentPage() {
   const { sessionToken } = useSessionState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const trackedPaymentView = useRef(false);
+
+  useEffect(() => {
+    if (trackedPaymentView.current) return;
+    trackedPaymentView.current = true;
+    trackEvent("payment_viewed");
+  }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

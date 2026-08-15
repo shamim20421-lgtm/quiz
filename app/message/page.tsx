@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
 import type { Tone } from "@/lib/types";
 
@@ -18,6 +19,13 @@ export default function MessagePage() {
   const [tone, setTone] = useState<Tone>("soft");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const trackedMessageGeneratorOpened = useRef(false);
+
+  useEffect(() => {
+    if (trackedMessageGeneratorOpened.current) return;
+    trackedMessageGeneratorOpened.current = true;
+    trackEvent("message_generator_opened");
+  }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,6 +46,7 @@ export default function MessagePage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       sessionStorage.setItem("messageResult", JSON.stringify(data));
+      trackEvent("message_generated", { tone: data.tone });
       router.push("/message/result");
     } catch {
       setError("বার্তা তৈরি করা যায়নি। আবার চেষ্টা করুন।");

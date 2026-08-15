@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { CheckCircle2, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 const signs = [
   "আগে নিজে থেকে মেসেজ করত...",
@@ -20,6 +24,14 @@ const faqs = [
 ];
 
 export default function HomePage() {
+  const trackedLandingView = useRef(false);
+
+  useEffect(() => {
+    if (trackedLandingView.current) return;
+    trackedLandingView.current = true;
+    trackEvent("landing_view");
+  }, []);
+
   return (
     <div className="bg-[#071426]">
       <section className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-[920px] content-center gap-8 px-4 py-8 lg:grid-cols-[1fr_360px] lg:items-center">
@@ -32,7 +44,7 @@ export default function HomePage() {
           <p className="mt-4 text-xl font-semibold leading-8 text-rose-100">অনুমান নয়। মাত্র ১ মিনিটে বুঝুন এখন কী করা সবচেয়ে ভালো।</p>
           <p className="mt-4 text-lg leading-8 text-slate-200">আপনার পরিস্থিতির ভিত্তিতে যোগাযোগের পরবর্তী পদক্ষেপ, কী লিখবেন এবং কী এড়িয়ে চলবেন—সব এক জায়গায় দেখুন।</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link className="rounded-full bg-rose-500 px-6 py-4 text-center font-bold text-white transition hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-200" href="/start">
+            <Link className="rounded-full bg-rose-500 px-6 py-4 text-center font-bold text-white transition hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-200" href="/start" onClick={() => trackEvent("start_clicked")}>
               ❤️ এখন কী করব জানুন
             </Link>
           </div>
