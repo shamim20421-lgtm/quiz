@@ -83,7 +83,7 @@ export default function QuizInterestPage() {
               <X aria-hidden="true" className="h-5 w-5" />
             </button>
           </div>
-          <h1 className="mt-6 text-3xl font-black">শুরু করার আগে</h1>
+          <h1 className="mt-6 text-3xl font-bold">শুরু করার আগে</h1>
           <p className="mt-3 leading-7 text-slate-600">মাত্র ১০টি ছোট প্রশ্ন। আপনার পরিস্থিতি বুঝতে প্রায় ১ মিনিট লাগবে।</p>
           <div className="mt-6 grid gap-3">
             {[
@@ -101,7 +101,7 @@ export default function QuizInterestPage() {
           <button
             type="button"
             onClick={() => setIntro(false)}
-            className="mt-7 min-h-14 w-full rounded-full bg-rose-500 px-5 font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500"
+            className="mt-7 min-h-14 w-full rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500"
           >
             শুরু করুন
           </button>
@@ -116,7 +116,7 @@ export default function QuizInterestPage() {
         <button
           type="button"
           onClick={() => router.push("/start")}
-          className="absolute right-5 top-5 inline-flex min-h-11 items-center gap-2 rounded-full border border-rose-200 bg-white px-4 font-bold text-rose-700 shadow-sm focus:outline focus:outline-2 focus:outline-rose-500"
+          className="absolute right-5 top-5 inline-flex min-h-11 items-center gap-2 rounded-full border border-rose-200 bg-white px-4 font-semibold text-rose-700 shadow-sm focus:outline focus:outline-2 focus:outline-rose-500"
         >
           <X aria-hidden="true" className="h-5 w-5" />
           বন্ধ করুন
@@ -124,9 +124,9 @@ export default function QuizInterestPage() {
         <div className="pr-32 pt-4">
           <ProgressBar value={index + 1} max={assessmentQuestions.length} />
         </div>
-        <p className="mt-4 text-sm font-bold text-rose-700">{toBanglaNumber(progressPercent)}% সম্পন্ন</p>
+        <p className="mt-4 text-sm font-semibold text-rose-700">{toBanglaNumber(progressPercent)}% সম্পন্ন</p>
         <p className="sr-only">প্রশ্ন {toBanglaNumber(index + 1)}, মোট ১০টি প্রশ্ন</p>
-        <h1 className="mt-3 text-2xl font-black leading-snug">{question.text}</h1>
+        <h1 className="mt-3 text-2xl font-bold leading-snug">{question.text}</h1>
         <div className="mt-6 grid gap-3">
           {question.answers.map((answer) => (
             <AnswerOption key={answer.key} text={answer.text} selected={answers[question.key] === answer.key} disabled={saving} onSelect={() => void choose(answer.key)} />

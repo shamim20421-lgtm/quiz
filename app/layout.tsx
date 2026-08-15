@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Bengali } from "next/font/google";
+import { Hind_Siliguri } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SessionProvider } from "@/lib/session-context";
 
-const banglaFont = Noto_Sans_Bengali({
+const banglaFont = Hind_Siliguri({
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["bengali", "latin"],
   display: "swap",
+  preload: true,
+  variable: "--font-bangla",
 });
 
 export const metadata: Metadata = {
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="bn">
+    <html lang="bn" className={banglaFont.variable}>
       <body className={banglaFont.className}>
         <SessionProvider>
           <SiteHeader />

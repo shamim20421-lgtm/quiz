@@ -40,11 +40,11 @@ export default function HomePage() {
             <ShieldCheck aria-hidden="true" className="h-4 w-4" />
             সম্পর্ক সহায়ক
           </div>
-          <h1 className="text-4xl font-black leading-tight text-white sm:text-5xl">আজও কি তার রিপ্লাইয়ের অপেক্ষায় আছেন?</h1>
+          <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl">আজও কি তার রিপ্লাইয়ের অপেক্ষায় আছেন?</h1>
           <p className="mt-4 text-xl font-semibold leading-8 text-rose-100">অনুমান নয়। মাত্র ১ মিনিটে বুঝুন এখন কী করা সবচেয়ে ভালো।</p>
           <p className="mt-4 text-lg leading-8 text-slate-200">আপনার পরিস্থিতির ভিত্তিতে যোগাযোগের পরবর্তী পদক্ষেপ, কী লিখবেন এবং কী এড়িয়ে চলবেন—সব এক জায়গায় দেখুন।</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link className="rounded-full bg-rose-500 px-6 py-4 text-center font-bold text-white transition hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-200" href="/start" onClick={() => trackEvent("start_clicked")}>
+            <Link className="rounded-full bg-rose-500 px-6 py-4 text-center font-semibold text-white transition hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-200" href="/start" onClick={() => trackEvent("start_clicked")}>
               ❤️ এখন কী করব জানুন
             </Link>
           </div>
@@ -67,7 +67,7 @@ export default function HomePage() {
 
       <section className="bg-white px-4 py-12 text-slate-900">
         <div className="mx-auto max-w-[920px]">
-          <h2 className="text-2xl font-black">আপনার কি এমন হচ্ছে?</h2>
+          <h2 className="text-2xl font-bold">আপনার কি এমন হচ্ছে?</h2>
           <div className="mt-6 grid gap-3">
             {signs.map((item) => (
               <div key={item} className="flex items-start gap-3 rounded-2xl border border-rose-100 p-4">
@@ -81,7 +81,7 @@ export default function HomePage() {
 
       <section className="bg-[#0d1d33] px-4 py-12">
         <div className="mx-auto max-w-[920px]">
-          <h2 className="text-2xl font-black text-white">আপনার ভরসার জায়গা</h2>
+          <h2 className="text-2xl font-bold text-white">আপনার ভরসার জায়গা</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {[
               ["আপনার তথ্য ব্যক্তিগত থাকবে।", LockKeyhole],
@@ -99,7 +99,7 @@ export default function HomePage() {
 
       <section className="px-4 py-12">
         <div className="mx-auto max-w-[920px]">
-          <h2 className="text-2xl font-black text-white">আপনি যা পাবেন</h2>
+          <h2 className="text-2xl font-bold text-white">আপনি যা পাবেন</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {receives.map((item) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-slate-100">
@@ -112,11 +112,11 @@ export default function HomePage() {
 
       <section className="bg-[#0d1d33] px-4 py-12">
         <div className="mx-auto max-w-[920px]">
-          <h2 className="text-2xl font-black text-white">কীভাবে কাজ করে</h2>
+          <h2 className="text-2xl font-bold text-white">কীভাবে কাজ করে</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {["আজ কী হয়েছে বলুন", "দশটি প্রশ্নের উত্তর দিন", "আপনার করণীয় দেখুন"].map((item, index) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-white p-5 text-slate-900">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 font-bold text-rose-700">{index + 1}</div>
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 font-semibold text-rose-700">{index + 1}</div>
                 <p className="mt-4 font-semibold">{item}</p>
               </div>
             ))}
@@ -126,11 +126,11 @@ export default function HomePage() {
 
       <section className="bg-white px-4 py-12 text-slate-900">
         <div className="mx-auto max-w-[920px]">
-          <h2 className="text-2xl font-black">সাধারণ প্রশ্ন</h2>
+          <h2 className="text-2xl font-bold">সাধারণ প্রশ্ন</h2>
           <div className="mt-6 space-y-4">
             {faqs.map(([question, answer]) => (
               <details key={question} className="rounded-2xl border border-rose-100 p-4">
-                <summary className="cursor-pointer font-bold">{question}</summary>
+                <summary className="cursor-pointer font-semibold">{question}</summary>
                 <p className="mt-3 leading-7 text-slate-600">{answer}</p>
               </details>
             ))}

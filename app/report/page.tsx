@@ -58,12 +58,12 @@ export default function ReportPage() {
         {error ? (
           <div className="rounded-3xl bg-white p-6 text-center text-slate-900">
             <p aria-live="polite" className="font-semibold text-rose-700">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-bold text-white">আবার চেষ্টা করুন</button>
+            <button type="button" onClick={() => void load()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-semibold text-white">আবার চেষ্টা করুন</button>
           </div>
         ) : null}
         {report ? (
           <>
-            <h1 className="text-3xl font-black text-white">❤️ আপনার জন্য করণীয়</h1>
+            <h1 className="text-3xl font-bold text-white">❤️ আপনার জন্য করণীয়</h1>
             <ReportSection title="আপনার পরিস্থিতির সারাংশ"><p>{report.full_summary}</p></ReportSection>
             <ReportSection title="যোগাযোগের বর্তমান ধরন"><p>{report.communication_pattern}</p></ReportSection>
             <ReportSection title="সম্ভাব্য কারণগুলো"><ul className="list-disc space-y-2 pl-5">{report.possible_reasons.map((item) => <li key={item}>{item}</li>)}</ul></ReportSection>
@@ -72,7 +72,7 @@ export default function ReportPage() {
             <ReportSection title="পরবর্তী কথোপকথন কীভাবে শুরু করবেন"><p>{report.suggested_conversation}</p></ReportSection>
             <ReportSection title="সম্পর্ক নিয়ে গুরুত্বপূর্ণ উপলব্ধি"><p>{report.relationship_insight}</p></ReportSection>
             <ReportSection title="তিনটি প্রস্তাবিত বার্তা"><div className="grid gap-3">{report.suggested_messages.map((item) => <p key={item} className="rounded-2xl bg-rose-50 p-4">{item}</p>)}</div></ReportSection>
-            <Link href="/message" className="min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
+            <Link href="/message" className="min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
               নিজের পরিস্থিতি অনুযায়ী বার্তা তৈরি করুন
             </Link>
           </>

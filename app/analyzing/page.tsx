@@ -54,7 +54,7 @@ export default function AnalyzingPage() {
         {error ? (
           <div className="rounded-3xl bg-white p-6 text-center text-slate-900">
             <p aria-live="polite" className="font-semibold text-rose-700">{error}</p>
-            <button type="button" onClick={() => void complete()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-bold text-white focus:outline focus:outline-2 focus:outline-rose-500">
+            <button type="button" onClick={() => void complete()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-semibold text-white focus:outline focus:outline-2 focus:outline-rose-500">
               আবার চেষ্টা করুন
             </button>
           </div>

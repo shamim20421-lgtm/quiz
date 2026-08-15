@@ -54,7 +54,7 @@ export default function ResultPage() {
       <div className="mx-auto max-w-[520px] px-4 py-8">
         <div className="rounded-3xl bg-white p-6 text-center text-slate-900">
           <p aria-live="polite" className="font-semibold text-rose-700">{error}</p>
-          <button type="button" onClick={() => void load()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-bold text-white">আবার চেষ্টা করুন</button>
+          <button type="button" onClick={() => void load()} className="mt-5 min-h-12 rounded-full bg-rose-500 px-5 font-semibold text-white">আবার চেষ্টা করুন</button>
         </div>
       </div>
     );
@@ -63,32 +63,32 @@ export default function ResultPage() {
   return (
     <div className="px-4 py-8">
       <section className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-slate-900">
-        <h1 className="text-3xl font-black leading-tight">{data!.report.title}</h1>
+        <h1 className="text-3xl font-bold leading-tight">{data!.report.title}</h1>
         <div className="mt-6">
-          <h2 className="font-bold">আপনার পরিস্থিতি</h2>
+          <h2 className="font-semibold">আপনার পরিস্থিতি</h2>
           <div className="mt-3 space-y-4 leading-7 text-slate-700">
             {data!.report.free_summary.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           </div>
         </div>
         <div className="mt-6 rounded-2xl border border-rose-100 bg-rose-50 p-4">
-          <h2 className="font-bold">আজ কী করবেন</h2>
+          <h2 className="font-semibold">আজ কী করবেন</h2>
           <p className="mt-2 leading-7 text-slate-700">{data!.report.immediate_action}</p>
         </div>
         <div className="mt-4 rounded-2xl border border-slate-200 p-4">
-          <h2 className="font-bold">আজ কী করবেন না</h2>
+          <h2 className="font-semibold">আজ কী করবেন না</h2>
           <p className="mt-2 leading-7 text-slate-700">{data!.report.avoid_today}</p>
         </div>
         <div className="mt-4 rounded-2xl border border-slate-200 p-4">
-          <h2 className="font-bold">এই বার্তাটি পাঠাতে পারেন</h2>
+          <h2 className="font-semibold">এই বার্তাটি পাঠাতে পারেন</h2>
           <p className="mt-2 leading-7 text-slate-700">{data!.report.sample_message}</p>
         </div>
         <p className="mt-5 text-sm leading-6 text-slate-600">{disclaimer}</p>
         <p className="mt-3 text-sm leading-6 text-slate-600">{safetyMessage}</p>
         <div className="mt-6 rounded-2xl border border-rose-100 p-4">
-          <h2 className="font-bold">আপনার জন্য বিস্তারিত করণীয় দেখুন</h2>
+          <h2 className="font-semibold">আপনার জন্য বিস্তারিত করণীয় দেখুন</h2>
           <p className="mt-2 leading-7 text-slate-600">কী লিখবেন, কী এড়িয়ে চলবেন এবং আগামী তিন দিনে কীভাবে এগোবেন—আপনার উত্তরের ভিত্তিতে দেখুন।</p>
         </div>
-        <Link href="/premium" className="mt-7 block min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
+        <Link href="/premium" className="mt-7 block min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
           আমার বিস্তারিত করণীয় দেখুন
         </Link>
         <button type="button" onClick={() => { clearSession(); router.push("/start"); }} className="mt-4 w-full rounded-full px-5 py-3 font-semibold text-rose-700 underline focus:outline focus:outline-2 focus:outline-rose-500">

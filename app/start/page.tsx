@@ -55,7 +55,7 @@ export default function StartPage() {
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
       <div className="mx-auto max-w-[520px]">
         <p className="text-sm font-semibold text-rose-200">আপনার পাশে ছোট AI সহায়ক</p>
-        <h1 className="mt-3 text-3xl font-black leading-tight text-white">আজ আপনার মনে কোন প্রশ্নটা ঘুরছে?</h1>
+        <h1 className="mt-3 text-3xl font-bold leading-tight text-white">আজ আপনার মনে কোন প্রশ্নটা ঘুরছে?</h1>
         <p className="mt-3 leading-7 text-slate-300">যেটা এখন সবচেয়ে বেশি ভাবাচ্ছে, সেটি বেছে নিন।</p>
         <div className="mt-7 grid gap-3">
           {problems.map((problem) => {
@@ -72,9 +72,9 @@ export default function StartPage() {
             >
               <span aria-hidden="true" className="text-2xl">{problem.icon}</span>
               <span className="min-w-0">
-                <span className="block font-bold leading-6">{problem.label}</span>
-                <span className="mt-1 block text-sm font-medium leading-6 text-slate-600">{problem.detail}</span>
-                <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-1 text-xs font-bold text-rose-700">
+                <span className="block font-semibold leading-6">{problem.label}</span>
+                <span className="mt-1 block text-sm font-normal leading-6 text-slate-600">{problem.detail}</span>
+                <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-700">
                   <Clock3 aria-hidden="true" className="h-3 w-3" />
                   {isLoading ? "শুরু হচ্ছে..." : problem.tag}
                 </span>

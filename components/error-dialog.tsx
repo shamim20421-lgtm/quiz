@@ -27,7 +27,7 @@ export function ErrorDialog({
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600">
               <AlertCircle aria-hidden="true" className="h-5 w-5" />
             </span>
-            <h2 id="start-error-title" className="text-xl font-black">
+            <h2 id="start-error-title" className="text-xl font-bold">
               {title}
             </h2>
           </div>
@@ -47,14 +47,14 @@ export function ErrorDialog({
           <button
             type="button"
             onClick={onClose}
-            className="min-h-12 rounded-full border border-slate-300 px-5 font-bold text-slate-800 focus:outline focus:outline-2 focus:outline-rose-500"
+            className="min-h-12 rounded-full border border-slate-300 px-5 font-semibold text-slate-800 focus:outline focus:outline-2 focus:outline-rose-500"
           >
             ফিরে যান
           </button>
           <button
             type="button"
             onClick={onRetry}
-            className="min-h-12 rounded-full bg-rose-500 px-5 font-bold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500"
+            className="min-h-12 rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500"
           >
             আবার চেষ্টা করুন
           </button>
