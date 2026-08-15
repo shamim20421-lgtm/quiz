@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState } from "@/components/loading-state";
+import { BanglaNumberText } from "@/components/bangla-number-text";
 import { ReportSection } from "@/components/report-section";
 import { useSessionState } from "@/lib/session-context";
 
@@ -67,11 +68,11 @@ export default function ReportPage() {
             <ReportSection title="আপনার পরিস্থিতির সারাংশ"><p>{report.full_summary}</p></ReportSection>
             <ReportSection title="যোগাযোগের বর্তমান ধরন"><p>{report.communication_pattern}</p></ReportSection>
             <ReportSection title="সম্ভাব্য কারণগুলো"><ul className="list-disc space-y-2 pl-5">{report.possible_reasons.map((item) => <li key={item}>{item}</li>)}</ul></ReportSection>
-            <ReportSection title="আজ থেকে তিন দিনের পরিকল্পনা"><ul className="space-y-2">{report.action_plan.map((item) => <li key={item}>{item}</li>)}</ul></ReportSection>
+            <ReportSection title="আজ থেকে তিন দিনের পরিকল্পনা"><ul className="space-y-2">{report.action_plan.map((item) => <li key={item}><BanglaNumberText text={item} /></li>)}</ul></ReportSection>
             <ReportSection title="যেসব ভুল এড়িয়ে চলবেন"><ul className="list-disc space-y-2 pl-5">{report.mistakes_to_avoid.map((item) => <li key={item}>{item}</li>)}</ul></ReportSection>
             <ReportSection title="পরবর্তী কথোপকথন কীভাবে শুরু করবেন"><p>{report.suggested_conversation}</p></ReportSection>
             <ReportSection title="সম্পর্ক নিয়ে গুরুত্বপূর্ণ উপলব্ধি"><p>{report.relationship_insight}</p></ReportSection>
-            <ReportSection title="তিনটি প্রস্তাবিত বার্তা"><div className="grid gap-3">{report.suggested_messages.map((item) => <p key={item} className="rounded-2xl bg-rose-50 p-4">{item}</p>)}</div></ReportSection>
+            <ReportSection title="তিনটি প্রস্তাবিত বার্তা"><div className="grid gap-3">{report.suggested_messages.map((item) => <p key={item} className="rounded-2xl bg-rose-50 p-4"><BanglaNumberText text={item} /></p>)}</div></ReportSection>
             <Link href="/message" className="min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
               নিজের পরিস্থিতি অনুযায়ী বার্তা তৈরি করুন
             </Link>

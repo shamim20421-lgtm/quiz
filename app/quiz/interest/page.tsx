@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Clock, FileText, RotateCcw, ShieldCheck, X } from "lucide-react";
 import { AnswerOption } from "@/components/answer-option";
+import { BanglaNumberText } from "@/components/bangla-number-text";
 import { ProgressBar } from "@/components/progress-bar";
 import { assessmentQuestions } from "@/lib/assessment/questions";
 import { useSessionState } from "@/lib/session-context";
@@ -84,7 +85,9 @@ export default function QuizInterestPage() {
             </button>
           </div>
           <h1 className="mt-6 text-3xl font-bold">শুরু করার আগে</h1>
-          <p className="mt-3 leading-7 text-slate-600">মাত্র ১০টি ছোট প্রশ্ন। আপনার পরিস্থিতি বুঝতে প্রায় ১ মিনিট লাগবে।</p>
+          <p className="mt-3 leading-7 text-slate-600">
+            মাত্র <span className="bangla-number">১০</span>টি ছোট প্রশ্ন। আপনার পরিস্থিতি বুঝতে প্রায় <span className="bangla-number">১</span> মিনিট লাগবে।
+          </p>
           <div className="mt-6 grid gap-3">
             {[
               [Clock, "প্রায় ১ মিনিট"],
@@ -94,7 +97,9 @@ export default function QuizInterestPage() {
             ].map(([Icon, text]) => (
               <div key={String(text)} className="flex items-center gap-3 rounded-2xl border border-rose-100 p-4">
                 <Icon aria-hidden="true" className="h-5 w-5 text-rose-600" />
-                <span className="font-semibold">{String(text)}</span>
+                <span className="font-semibold">
+                  <BanglaNumberText text={String(text)} />
+                </span>
               </div>
             ))}
           </div>
@@ -124,9 +129,11 @@ export default function QuizInterestPage() {
         <div className="pr-32 pt-4">
           <ProgressBar value={index + 1} max={assessmentQuestions.length} />
         </div>
-        <p className="mt-4 text-sm font-semibold text-rose-700">{toBanglaNumber(progressPercent)}% সম্পন্ন</p>
-        <p className="sr-only">প্রশ্ন {toBanglaNumber(index + 1)}, মোট ১০টি প্রশ্ন</p>
-        <h1 className="mt-3 text-2xl font-bold leading-snug">{question.text}</h1>
+        <p className="mt-4 text-sm font-semibold text-rose-700"><span className="bangla-number">{toBanglaNumber(progressPercent)}%</span> সম্পন্ন</p>
+        <p className="sr-only">প্রশ্ন <span className="bangla-number">{toBanglaNumber(index + 1)}</span>, মোট <span className="bangla-number">১০</span>টি প্রশ্ন</p>
+        <h1 className="mt-3 text-2xl font-bold leading-snug">
+          <BanglaNumberText text={question.text} />
+        </h1>
         <div className="mt-6 grid gap-3">
           {question.answers.map((answer) => (
             <AnswerOption key={answer.key} text={answer.text} selected={answers[question.key] === answer.key} disabled={saving} onSelect={() => void choose(answer.key)} />

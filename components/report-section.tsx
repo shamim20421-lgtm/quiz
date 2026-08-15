@@ -1,3 +1,5 @@
+import { BanglaNumberText } from "@/components/bangla-number-text";
+
 export function ReportSection({
   title,
   children,
@@ -7,7 +9,9 @@ export function ReportSection({
 }) {
   return (
     <section className="rounded-3xl border border-rose-100 bg-white p-5 text-slate-900 shadow-sm">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <h2 className="text-lg font-semibold">
+        <BanglaNumberText text={title} />
+      </h2>
       <div className="mt-3 text-base leading-7 text-slate-700">{children}</div>
     </section>
   );

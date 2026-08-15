@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CheckCircle2, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { BanglaNumberText } from "@/components/bangla-number-text";
 import { trackEvent } from "@/lib/analytics";
 
 const signs = [
@@ -41,7 +42,7 @@ export default function HomePage() {
             সম্পর্ক সহায়ক
           </div>
           <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl">আজও কি তার রিপ্লাইয়ের অপেক্ষায় আছেন?</h1>
-          <p className="mt-4 text-xl font-semibold leading-8 text-rose-100">অনুমান নয়। মাত্র ১ মিনিটে বুঝুন এখন কী করা সবচেয়ে ভালো।</p>
+          <p className="mt-4 text-xl font-semibold leading-8 text-rose-100">অনুমান নয়। মাত্র <span className="bangla-number">১</span> মিনিটে বুঝুন এখন কী করা সবচেয়ে ভালো।</p>
           <p className="mt-4 text-lg leading-8 text-slate-200">আপনার পরিস্থিতির ভিত্তিতে যোগাযোগের পরবর্তী পদক্ষেপ, কী লিখবেন এবং কী এড়িয়ে চলবেন—সব এক জায়গায় দেখুন।</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link className="rounded-full bg-rose-500 px-6 py-4 text-center font-semibold text-white transition hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-200" href="/start" onClick={() => trackEvent("start_clicked")}>
@@ -103,7 +104,7 @@ export default function HomePage() {
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {receives.map((item) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-slate-100">
-                {item}
+                <BanglaNumberText text={item} />
               </div>
             ))}
           </div>
@@ -117,7 +118,9 @@ export default function HomePage() {
             {["আজ কী হয়েছে বলুন", "দশটি প্রশ্নের উত্তর দিন", "আপনার করণীয় দেখুন"].map((item, index) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-white p-5 text-slate-900">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 font-semibold text-rose-700">{index + 1}</div>
-                <p className="mt-4 font-semibold">{item}</p>
+                <p className="mt-4 font-semibold">
+                  <BanglaNumberText text={item} />
+                </p>
               </div>
             ))}
           </div>

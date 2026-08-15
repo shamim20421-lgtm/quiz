@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ArrowRight, Clock3, MessageSquareText } from "lucide-react";
 import { useState } from "react";
+import { BanglaNumberText } from "@/components/bangla-number-text";
 import { ErrorDialog } from "@/components/error-dialog";
 import { trackEvent } from "@/lib/analytics";
 import { useSessionState } from "@/lib/session-context";
@@ -73,10 +74,12 @@ export default function StartPage() {
               <span aria-hidden="true" className="text-2xl">{problem.icon}</span>
               <span className="min-w-0">
                 <span className="block font-semibold leading-6">{problem.label}</span>
-                <span className="mt-1 block text-sm font-normal leading-6 text-slate-600">{problem.detail}</span>
+                <span className="mt-1 block text-sm font-normal leading-6 text-slate-600">
+                  <BanglaNumberText text={problem.detail} />
+                </span>
                 <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-700">
                   <Clock3 aria-hidden="true" className="h-3 w-3" />
-                  {isLoading ? "শুরু হচ্ছে..." : problem.tag}
+                  {isLoading ? "শুরু হচ্ছে..." : <BanglaNumberText text={problem.tag} />}
                 </span>
               </span>
               {problem.direct ? <MessageSquareText aria-hidden="true" className="h-5 w-5 text-rose-600" /> : <ArrowRight aria-hidden="true" className="h-5 w-5 text-rose-600" />}

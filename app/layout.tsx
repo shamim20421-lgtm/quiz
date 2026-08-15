@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hind_Siliguri } from "next/font/google";
+import { Hind_Siliguri, Noto_Sans_Bengali } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
@@ -14,6 +14,14 @@ const banglaFont = Hind_Siliguri({
   variable: "--font-bangla",
 });
 
+const banglaNumberFont = Noto_Sans_Bengali({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["bengali", "latin"],
+  display: "swap",
+  preload: true,
+  variable: "--font-bangla-number",
+});
+
 export const metadata: Metadata = {
   title: "আজকের সম্পর্ক",
   description: "Bangla relationship assessment prototype",
@@ -21,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="bn" className={banglaFont.variable}>
+    <html lang="bn" className={`${banglaFont.variable} ${banglaNumberFont.variable}`}>
       <body className={banglaFont.className}>
         <SessionProvider>
           <SiteHeader />

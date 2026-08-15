@@ -32,6 +32,11 @@ body {
   letter-spacing: normal;
 }
 
+.bangla-number {
+  font-family: var(--font-bangla-number), "Noto Sans Bengali", "Hind Siliguri", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
 button,
 a,
 input,
