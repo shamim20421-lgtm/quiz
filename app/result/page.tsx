@@ -22,6 +22,7 @@ export default function ResultPage() {
   const trackedResultView = useRef<string | null>(null);
   const loadingRef = useRef(false);
   const [loading, setLoading] = useState(true);
+  const [resultVisible, setResultVisible] = useState(false);
 
   async function load() {
     if (loadingRef.current) return;
@@ -31,6 +32,7 @@ export default function ResultPage() {
     }
     loadingRef.current = true;
     setLoading(true);
+    setResultVisible(false);
     setError("");
     try {
       const response = await fetch(`/api/quiz/${sessionToken}`);
@@ -41,6 +43,7 @@ export default function ResultPage() {
         trackedResultView.current = sessionToken;
         trackEvent("result_viewed", { result_type: payload.session.result_type });
       }
+      requestAnimationFrame(() => setResultVisible(true));
     } catch {
       setError("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");
     } finally {
@@ -79,7 +82,7 @@ export default function ResultPage() {
   }
 
   return (
-    <div className="px-4 py-8">
+    <div className={`px-4 py-8 transition duration-300 ease-out motion-reduce:transition-none ${resultVisible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
       <section className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-slate-900">
         <h1 className="text-3xl font-bold leading-tight">{data!.report.title}</h1>
         <div className="mt-6">
