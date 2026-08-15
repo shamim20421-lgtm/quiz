@@ -7,6 +7,7 @@ import { BanglaNumberText } from "@/components/bangla-number-text";
 import { ButtonSpinner } from "@/components/button-spinner";
 import { ErrorDialog } from "@/components/error-dialog";
 import { trackEvent } from "@/lib/analytics";
+import { trackMetaCustomEvent } from "@/lib/meta-pixel";
 import { useSessionState } from "@/lib/session-context";
 import type { ProblemType } from "@/lib/types";
 
@@ -51,6 +52,7 @@ export default function StartPage() {
       if (sessionStorage.getItem(trackedKey) !== "true") {
         sessionStorage.setItem(trackedKey, "true");
         trackEvent("quiz_started", { source: "homepage" });
+        trackMetaCustomEvent("QuizStarted");
       }
       router.push("/quiz/interest");
     } catch {

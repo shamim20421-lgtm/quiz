@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, CheckCircle2 } from "lucide-react";
 import { ButtonSpinner } from "@/components/button-spinner";
 import { trackEvent } from "@/lib/analytics";
+import { trackMetaCustomEvent, trackMetaLead } from "@/lib/meta-pixel";
 import { useSessionState } from "@/lib/session-context";
 
 const successCards = [
@@ -32,6 +33,7 @@ export default function PaymentPage() {
     if (trackedPaymentView.current) return;
     trackedPaymentView.current = true;
     trackEvent("early_access_form_viewed");
+    trackMetaCustomEvent("EarlyAccessFormViewed");
   }, []);
 
   useEffect(() => {
@@ -127,6 +129,7 @@ export default function PaymentPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       trackEvent("early_access_submitted");
+      trackMetaLead();
       setSuccessVisible(false);
       setSuccess(true);
     } catch (error) {

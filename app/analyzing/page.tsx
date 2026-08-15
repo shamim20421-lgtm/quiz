@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { ButtonSpinner } from "@/components/button-spinner";
 import { trackEvent } from "@/lib/analytics";
+import { trackMetaCustomEvent } from "@/lib/meta-pixel";
 import { useSessionState } from "@/lib/session-context";
 
 const steps = ["যোগাযোগের ধরন দেখা হচ্ছে", "সাম্প্রতিক পরিবর্তন মিলিয়ে দেখা হচ্ছে", "আপনার করণীয় প্রস্তুত করা হচ্ছে"];
@@ -80,6 +81,7 @@ export default function AnalyzingPage() {
       if (sessionStorage.getItem(trackedKey) !== "true") {
         sessionStorage.setItem(trackedKey, "true");
         trackEvent("quiz_completed", { total_questions: 10 });
+        trackMetaCustomEvent("QuizCompleted");
       }
       router.push("/result");
     } catch {

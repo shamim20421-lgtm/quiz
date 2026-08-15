@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Hind_Siliguri, Noto_Sans_Bengali } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
+import { MetaPixel } from "@/components/meta-pixel";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SessionProvider } from "@/lib/session-context";
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <SiteFooter />
         </SessionProvider>
       </body>
+      <MetaPixel />
       <GoogleAnalytics gaId="G-PRC3694XMR" />
     </html>
   );

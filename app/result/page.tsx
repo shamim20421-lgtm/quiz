@@ -7,6 +7,7 @@ import { disclaimer, safetyMessage } from "@/components/site-footer";
 import { ButtonSpinner } from "@/components/button-spinner";
 import { LoadingState } from "@/components/loading-state";
 import { trackEvent } from "@/lib/analytics";
+import { trackMetaCustomEvent } from "@/lib/meta-pixel";
 import { useSessionState } from "@/lib/session-context";
 
 type ResultData = {
@@ -109,7 +110,7 @@ export default function ResultPage() {
           <h2 className="font-semibold">আপনার জন্য বিস্তারিত করণীয় দেখুন</h2>
           <p className="mt-2 leading-7 text-slate-600">কী লিখবেন, কী এড়িয়ে চলবেন এবং আগামী তিন দিনে কীভাবে এগোবেন—আপনার উত্তরের ভিত্তিতে দেখুন।</p>
         </div>
-        <Link href="/premium" className="mt-7 block min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500" onClick={() => trackEvent("premium_cta_clicked")}>
+        <Link href="/premium" className="mt-7 block min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500" onClick={() => { trackEvent("premium_cta_clicked"); trackMetaCustomEvent("PremiumCTAClicked"); }}>
           আমার বিস্তারিত করণীয় দেখুন
         </Link>
         <button type="button" onClick={() => { clearSession(); router.push("/start"); }} className="mt-4 w-full rounded-full px-5 py-3 font-semibold text-rose-700 underline focus:outline focus:outline-2 focus:outline-rose-500">
