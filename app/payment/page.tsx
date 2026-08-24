@@ -16,6 +16,12 @@ const successCards = [
 
 const shareUrl = "https://relationship.creatives71.com";
 
+type EarlyAccessResponse = {
+  success?: boolean;
+  metaEventId?: unknown;
+  error?: string;
+};
+
 export default function PaymentPage() {
   const router = useRouter();
   const { sessionToken } = useSessionState();
@@ -126,10 +132,12 @@ export default function PaymentPage() {
           feedback: form.get("feedback"),
         }),
       });
-      const data = await response.json();
+      const data = (await response.json()) as EarlyAccessResponse;
       if (!response.ok) throw new Error(data.error);
+      if (typeof data.metaEventId === "string" && data.metaEventId.length > 0) {
+        trackMetaLead(data.metaEventId);
+      }
       trackEvent("early_access_submitted");
-      trackMetaLead(data.metaEventId);
       setSuccessVisible(false);
       setSuccess(true);
     } catch (error) {

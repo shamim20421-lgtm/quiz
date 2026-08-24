@@ -4,7 +4,6 @@ import { metaPixelId } from "@/lib/meta-config";
 
 const metaPixelScriptId = "meta-pixel-script";
 const metaPixelScriptSrc = "https://connect.facebook.net/en_US/fbevents.js";
-const emptyMetaEventParams = {};
 
 type Fbq = {
   (command: "init", pixelId: string): void;
@@ -30,6 +29,12 @@ declare global {
 function logMetaPixelEvent(eventName: string) {
   if (process.env.NODE_ENV === "development") {
     console.log(`[Meta Pixel] ${eventName}`);
+  }
+}
+
+function logMetaPixelLead(eventId: string) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[Meta Pixel] Lead ${eventId}`);
   }
 }
 
@@ -95,6 +100,6 @@ export function trackMetaLead(eventId: string) {
   if (!eventId) return;
   if (!ensureMetaPixelInitialized() || typeof window.fbq !== "function") return;
 
-  logMetaPixelEvent("Lead");
-  window.fbq("track", "Lead", emptyMetaEventParams, { eventID: eventId });
+  logMetaPixelLead(eventId);
+  window.fbq("track", "Lead", {}, { eventID: eventId });
 }
