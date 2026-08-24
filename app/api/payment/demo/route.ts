@@ -1,4 +1,5 @@
 import { errorResponse, jsonResponse } from "@/lib/api";
+import { sendMetaLeadEvent } from "@/lib/meta-capi";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { earlyAccessSchema } from "@/lib/validation";
 
@@ -30,5 +31,8 @@ export async function POST(request: Request) {
     return errorResponse("তথ্য সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।", 500);
   }
 
-  return jsonResponse({ success: true });
+  const metaEventId = crypto.randomUUID();
+  await sendMetaLeadEvent(request, metaEventId);
+
+  return jsonResponse({ success: true, metaEventId });
 }

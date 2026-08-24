@@ -129,7 +129,7 @@ export default function PaymentPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       trackEvent("early_access_submitted");
-      trackMetaLead();
+      trackMetaLead(data.metaEventId);
       setSuccessVisible(false);
       setSuccess(true);
     } catch (error) {

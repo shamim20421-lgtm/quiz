@@ -1,13 +1,16 @@
 "use client";
 
-const metaPixelId = "1416756400306798";
+import { metaPixelId } from "@/lib/meta-config";
+
 const metaPixelScriptId = "meta-pixel-script";
 const metaPixelScriptSrc = "https://connect.facebook.net/en_US/fbevents.js";
+const emptyMetaEventParams = {};
 
 type Fbq = {
   (command: "init", pixelId: string): void;
   (command: "set", key: "autoConfig", value: boolean, pixelId: string): void;
   (command: "track" | "trackCustom", eventName: string): void;
+  (command: "track", eventName: "Lead", params: Record<string, never>, options: { eventID: string }): void;
   callMethod?: (...args: unknown[]) => void;
   loaded?: boolean;
   push?: Fbq;
@@ -88,9 +91,10 @@ export function trackMetaCustomEvent(eventName: string) {
   window.fbq("trackCustom", eventName);
 }
 
-export function trackMetaLead() {
+export function trackMetaLead(eventId: string) {
+  if (!eventId) return;
   if (!ensureMetaPixelInitialized() || typeof window.fbq !== "function") return;
 
   logMetaPixelEvent("Lead");
-  window.fbq("track", "Lead");
+  window.fbq("track", "Lead", emptyMetaEventParams, { eventID: eventId });
 }
