@@ -7,7 +7,6 @@ const metaPixelScriptSrc = "https://connect.facebook.net/en_US/fbevents.js";
 
 type Fbq = {
   (command: "init", pixelId: string): void;
-  (command: "set", key: "autoConfig", value: boolean, pixelId: string): void;
   (command: "track" | "trackCustom", eventName: string): void;
   (command: "track", eventName: "Lead", params: Record<string, never>, options: { eventID: string }): void;
   callMethod?: (...args: unknown[]) => void;
@@ -72,7 +71,6 @@ function ensureMetaPixelInitialized() {
 
   if (!window.__metaPixelInitialized) {
     window.__metaPixelInitialized = true;
-    window.fbq("set", "autoConfig", false, metaPixelId);
     window.fbq("init", metaPixelId);
   }
 
