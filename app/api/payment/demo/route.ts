@@ -1,4 +1,5 @@
 import { errorResponse, jsonResponse } from "@/lib/api";
+import { appendLeadToGoogleSheet } from "@/lib/google-sheets-leads";
 import { sendMetaLeadEvent } from "@/lib/meta-capi";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { earlyAccessSchema } from "@/lib/validation";
@@ -32,6 +33,10 @@ export async function POST(request: Request) {
   }
 
   const metaEventId = crypto.randomUUID();
+  await appendLeadToGoogleSheet({
+    name: parsed.data.name,
+    mobileNumber: parsed.data.mobileNumber,
+  });
   await sendMetaLeadEvent(request, metaEventId);
 
   return jsonResponse({ success: true, metaEventId });
