@@ -1,112 +1,107 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Copy, LockKeyhole } from "lucide-react";
 import { ButtonSpinner } from "@/components/button-spinner";
 import { trackEvent } from "@/lib/analytics";
-import { trackMetaCustomEvent, trackMetaLead } from "@/lib/meta-pixel";
 import { useSessionState } from "@/lib/session-context";
 
-const successCards = [
-  "🔒 আপনার তথ্য নিরাপদে সংরক্ষিত হয়েছে",
-  "📱 চালু হলে SMS/WhatsApp-এ জানানো হবে",
-  "❤️ ধন্যবাদ আমাদের প্রথম ব্যবহারকারী হওয়ার জন্য",
-];
+type PaymentStatus = "pending" | "verified" | "rejected";
 
-const shareUrl = "https://relationship.creatives71.com";
+type Payment = {
+  id: string;
+  amount: number;
+  currency: "BDT";
+  status: PaymentStatus;
+  created_at: string;
+  verified_at?: string | null;
+};
 
-type EarlyAccessResponse = {
-  success?: boolean;
-  metaEventId?: unknown;
+type PaymentStatusResponse = {
+  payment: Payment | null;
+  offer: {
+    bkashNumber: string;
+    amount: number;
+    regularAmount: number;
+    currency: "BDT";
+  };
   error?: string;
+};
+
+type PaymentSubmitResponse = {
+  success?: boolean;
+  payment?: Payment;
+  status?: PaymentStatus;
+  error?: string;
+};
+
+const defaultOffer = {
+  bkashNumber: "01953121121",
+  amount: 199,
+  regularAmount: 399,
+  currency: "BDT" as const,
 };
 
 export default function PaymentPage() {
   const router = useRouter();
   const { sessionToken } = useSessionState();
+  const [offer, setOffer] = useState(defaultOffer);
+  const [payment, setPayment] = useState<Payment | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [successVisible, setSuccessVisible] = useState(false);
-  const [shareStatus, setShareStatus] = useState("");
-  const trackedPaymentView = useRef(false);
+  const [copyStatus, setCopyStatus] = useState("");
   const submittingRef = useRef(false);
-  const sharingRef = useRef(false);
-  const shareStatusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const trackedView = useRef(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (trackedPaymentView.current) return;
-    trackedPaymentView.current = true;
-    trackEvent("early_access_form_viewed");
-    trackMetaCustomEvent("EarlyAccessFormViewed");
-  }, []);
-
-  useEffect(() => {
-    if (!success) return;
-    const frame = requestAnimationFrame(() => setSuccessVisible(true));
-    return () => cancelAnimationFrame(frame);
-  }, [success]);
-
-  useEffect(() => {
-    return () => {
-      if (shareStatusTimeoutRef.current) clearTimeout(shareStatusTimeoutRef.current);
-    };
-  }, []);
-
-  function showTemporaryShareStatus(message: string) {
-    setShareStatus(message);
-    if (shareStatusTimeoutRef.current) clearTimeout(shareStatusTimeoutRef.current);
-    shareStatusTimeoutRef.current = setTimeout(() => setShareStatus(""), 2000);
-  }
-
-  async function copyShareUrl() {
-    if (navigator.clipboard) {
-      await navigator.clipboard.writeText(shareUrl);
+    if (!sessionToken) {
+      router.replace("/start");
       return;
     }
 
-    const textarea = document.createElement("textarea");
-    textarea.value = shareUrl;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.top = "-1000px";
-    textarea.style.left = "-1000px";
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-
-    try {
-      document.execCommand("copy");
-    } finally {
-      document.body.removeChild(textarea);
-    }
-  }
-
-  async function shareWithFriend() {
-    if (sharingRef.current) return;
-    sharingRef.current = true;
-    setShareStatus("");
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "আজকের সম্পর্ক",
-          text: "আপনার সম্পর্কের পরিস্থিতি ১ মিনিটে বুঝে দেখুন।",
-          url: shareUrl,
-        });
-        trackEvent("share_clicked", { location: "thank_you" });
-        return;
+    async function loadPaymentStatus() {
+      setPageLoading(true);
+      setError("");
+      try {
+        const response = await fetch(`/api/payment/status?sessionToken=${encodeURIComponent(sessionToken!)}`);
+        const payload = (await response.json()) as PaymentStatusResponse;
+        if (!response.ok) throw new Error(payload.error);
+        setOffer(payload.offer);
+        setPayment(payload.payment);
+      } catch {
+        setError("পেমেন্ট তথ্য আনা যায়নি। আবার চেষ্টা করুন।");
+      } finally {
+        setPageLoading(false);
       }
+    }
 
-      await copyShareUrl();
-      trackEvent("share_clicked", { location: "thank_you" });
-      showTemporaryShareStatus("লিংক কপি হয়েছে ✓");
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") return;
-      setShareStatus("শেয়ার করা যায়নি। আবার চেষ্টা করুন।");
-    } finally {
-      sharingRef.current = false;
+    void loadPaymentStatus();
+  }, [router, sessionToken]);
+
+  useEffect(() => {
+    if (trackedView.current) return;
+    trackedView.current = true;
+    trackEvent("payment_page_viewed");
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
+  async function copyNumber() {
+    try {
+      await navigator.clipboard.writeText(offer.bkashNumber);
+      setCopyStatus("নম্বর কপি হয়েছে");
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopyStatus(""), 2000);
+    } catch {
+      setCopyStatus("কপি করা যায়নি");
     }
   }
 
@@ -117,107 +112,119 @@ export default function PaymentPage() {
       router.push("/start");
       return;
     }
+
     submittingRef.current = true;
-    const form = new FormData(event.currentTarget);
     setLoading(true);
     setError("");
+    const form = new FormData(event.currentTarget);
+
     try {
-      const response = await fetch("/api/payment/demo", {
+      const response = await fetch("/api/payment/submit", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           sessionToken,
-          name: form.get("name"),
-          mobileNumber: form.get("mobileNumber"),
-          feedback: form.get("feedback"),
+          bkashTrxId: form.get("bkashTrxId"),
+          senderMobileNumber: form.get("senderMobileNumber"),
         }),
       });
-      const data = (await response.json()) as EarlyAccessResponse;
-      if (!response.ok) throw new Error(data.error);
-      if (typeof data.metaEventId === "string" && data.metaEventId.length > 0) {
-        trackMetaLead(data.metaEventId);
-      }
-      trackEvent("early_access_submitted");
-      setSuccessVisible(false);
-      setSuccess(true);
+      const payload = (await response.json()) as PaymentSubmitResponse;
+      if (!response.ok) throw new Error(payload.error);
+      if (payload.payment) setPayment(payload.payment);
+      if (payload.status === "verified") router.push("/report");
+      trackEvent("manual_payment_submitted");
     } catch (error) {
-      setError(error instanceof Error && error.message === "সঠিক মোবাইল নম্বর দিন।" ? error.message : "তথ্য সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
+      setError(error instanceof Error && error.message ? error.message : "পেমেন্ট তথ্য সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
       submittingRef.current = false;
       setLoading(false);
     }
   }
 
-  if (success) {
-    return (
-      <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
-        <section className={`mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-center text-slate-900 transition duration-300 ease-out ${successVisible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
-          <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-50 text-green-600 transition duration-300 ease-out ${successVisible ? "scale-100" : "scale-90"}`}>
-            <CheckCircle2 aria-hidden="true" className="h-8 w-8" />
-          </div>
-          <h1 className="text-3xl font-bold">ধন্যবাদ ❤️</h1>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-700">
-            <Check aria-hidden="true" className="h-4 w-4" />
-            আপনার নিবন্ধন সম্পন্ন হয়েছে
-          </div>
-          <div className="mt-5 space-y-3 leading-7 text-slate-600">
-            <p>আপনার তথ্য সফলভাবে সংরক্ষণ করা হয়েছে।</p>
-            <p>আপনি এখন আমাদের প্রাথমিক অপেক্ষমান তালিকায় (Early Access List) যুক্ত হয়েছেন।</p>
-            <p>আমরা সীমিত সংখ্যক ব্যবহারকারীকে ধাপে ধাপে আমন্ত্রণ জানাব।</p>
-            <p>আপনার নম্বর এলে SMS বা WhatsApp-এর মাধ্যমে জানিয়ে দেওয়া হবে।</p>
-          </div>
-          <div className="mt-6 grid gap-3">
-            {successCards.map((item) => (
-              <div key={item} className="rounded-2xl border border-rose-100 p-4 text-left font-semibold">
-                {item}
-              </div>
-            ))}
-          </div>
-          <button type="button" onClick={() => { trackEvent("return_home_clicked"); router.push("/start"); }} className="mt-7 min-h-14 w-full rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
-            হোমে ফিরে যান
-          </button>
-          <button type="button" onClick={() => void shareWithFriend()} aria-label="আজকের সম্পর্ক বন্ধুর সঙ্গে শেয়ার করুন" className="mt-4 rounded-full px-5 py-3 text-sm font-semibold text-rose-700 underline focus:outline focus:outline-2 focus:outline-rose-500">
-            বন্ধুকে শেয়ার করুন
-          </button>
-          <p aria-live="polite" className="mt-2 min-h-6 text-sm font-semibold text-rose-700">{shareStatus}</p>
-        </section>
-      </div>
-    );
-  }
+  const isPending = payment?.status === "pending";
+  const isVerified = payment?.status === "verified";
+  const isRejected = payment?.status === "rejected";
 
   return (
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">
-      <form onSubmit={submit} className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-slate-900">
-        <p className="text-sm font-semibold text-rose-700">পরীক্ষামূলক ধাপ</p>
-        <h1 className="mt-2 text-3xl font-bold">ডেমো পেমেন্ট</h1>
-        <p className="mt-3 leading-7 text-slate-600">এটি পরীক্ষামূলক ধাপ। কোনো বাস্তব টাকা কাটা হবে না।</p>
-        <div className="mt-6 grid gap-4">
-          <label className="grid gap-2 font-semibold">
-            নাম
-            <input name="name" required className="min-h-12 rounded-2xl border border-slate-300 px-4 focus:outline focus:outline-2 focus:outline-rose-500" />
-          </label>
-          <label className="grid gap-2 font-semibold">
-            মোবাইল নম্বর
-            <input name="mobileNumber" required className="min-h-12 rounded-2xl border border-slate-300 px-4 focus:outline focus:outline-2 focus:outline-rose-500" />
-            <span className="text-sm font-normal leading-6 text-slate-500">আপনার নম্বর শুধু আগাম অ্যাক্সেস ও পরীক্ষামূলক যোগাযোগের জন্য ব্যবহার হবে।</span>
-          </label>
-          <label className="grid gap-2 font-semibold">
-            আপনার মতামত (ঐচ্ছিক)
-            <textarea name="feedback" rows={4} className="rounded-2xl border border-slate-300 p-4 leading-7 focus:outline focus:outline-2 focus:outline-rose-500" />
-          </label>
+      <section className="mx-auto max-w-[520px] rounded-3xl bg-white p-6 text-slate-900">
+        <LockKeyhole aria-hidden="true" className="h-8 w-8 text-rose-600" />
+        <h1 className="mt-4 text-3xl font-bold leading-tight">সম্পূর্ণ Relationship Analysis আনলক করুন</h1>
+        <p className="mt-3 rounded-2xl bg-rose-50 p-4 font-semibold text-rose-700">🎉 প্রথম ৫০ জনের জন্য ৫০% Launch Discount</p>
+
+        <div className="mt-5 flex items-end gap-3">
+          <p className="text-2xl font-bold text-slate-400 line-through">৳{offer.regularAmount}</p>
+          <p className="text-5xl font-bold text-rose-700">৳{offer.amount}</p>
         </div>
-        <p aria-live="polite" className="mt-4 min-h-6 text-sm font-semibold text-rose-700">{error}</p>
-        <button disabled={loading} className="mt-3 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500 disabled:cursor-wait disabled:opacity-70" aria-busy={loading}>
-          {loading ? (
-            <>
-              <ButtonSpinner />
-              সংরক্ষণ করা হচ্ছে...
-            </>
-          ) : (
-            "আগাম অ্যাক্সেস চাই"
-          )}
-        </button>
-      </form>
+
+        <div className="mt-6 rounded-2xl border border-rose-100 p-4">
+          <h2 className="font-bold">bKash-এ Send Money করুন</h2>
+          <div className="mt-4 grid gap-3 text-slate-700">
+            <div>
+              <p className="text-sm font-semibold text-slate-500">Number</p>
+              <div className="mt-1 flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3">
+                <span className="font-bold">{offer.bkashNumber}</span>
+                <button type="button" onClick={() => void copyNumber()} className="inline-flex h-10 w-10 items-center justify-center rounded-full text-rose-700 hover:bg-rose-50 focus:outline focus:outline-2 focus:outline-rose-500" aria-label="bKash নম্বর কপি করুন">
+                  <Copy aria-hidden="true" className="h-5 w-5" />
+                </button>
+              </div>
+              <p aria-live="polite" className="mt-1 min-h-5 text-sm font-semibold text-rose-700">{copyStatus}</p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-500">Amount</p>
+              <p className="mt-1 rounded-2xl bg-slate-50 px-4 py-3 text-xl font-bold">৳{offer.amount}</p>
+            </div>
+          </div>
+        </div>
+
+        {isVerified ? (
+          <div className="mt-6 rounded-2xl border border-green-100 bg-green-50 p-4 text-green-700">
+            <div className="flex items-center gap-2 font-bold">
+              <CheckCircle2 aria-hidden="true" className="h-5 w-5" />
+              পেমেন্ট ভেরিফাই হয়েছে
+            </div>
+            <Link href="/report" className="mt-4 block min-h-14 rounded-full bg-rose-500 px-5 py-4 text-center font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500">
+              বিস্তারিত রিপোর্ট দেখুন
+            </Link>
+          </div>
+        ) : (
+          <form onSubmit={submit} className="mt-6 grid gap-4">
+            {isPending ? (
+              <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 font-semibold text-amber-800">
+                Payment verification pending
+                <p className="mt-2 text-sm font-normal leading-6">আপনার TrxID জমা হয়েছে। ম্যানুয়ালি যাচাই করার পর বিস্তারিত রিপোর্ট আনলক হবে।</p>
+              </div>
+            ) : null}
+            {isRejected ? (
+              <div className="rounded-2xl border border-rose-100 bg-rose-50 p-4 font-semibold text-rose-700">
+                পেমেন্ট তথ্য মেলেনি। সঠিক TrxID দিয়ে আবার জমা দিন।
+              </div>
+            ) : null}
+            <label className="grid gap-2 font-semibold">
+              bKash Transaction ID (TrxID)
+              <input name="bkashTrxId" required disabled={isPending || pageLoading} className="min-h-12 rounded-2xl border border-slate-300 px-4 uppercase focus:outline focus:outline-2 focus:outline-rose-500 disabled:bg-slate-100" />
+            </label>
+            <label className="grid gap-2 font-semibold">
+              যে নম্বর থেকে Send Money করেছেন
+              <input name="senderMobileNumber" required disabled={isPending || pageLoading} className="min-h-12 rounded-2xl border border-slate-300 px-4 focus:outline focus:outline-2 focus:outline-rose-500 disabled:bg-slate-100" />
+              <span className="text-sm font-normal leading-6 text-slate-500">শুধু ম্যানুয়াল bKash যাচাইয়ের জন্য ব্যবহার হবে।</span>
+            </label>
+            <p aria-live="polite" className="min-h-6 text-sm font-semibold text-rose-700">{error}</p>
+            <button disabled={loading || isPending || pageLoading} className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-rose-500 px-5 font-semibold text-white hover:bg-rose-600 focus:outline focus:outline-2 focus:outline-rose-500 disabled:cursor-wait disabled:opacity-70" aria-busy={loading}>
+              {loading ? (
+                <>
+                  <ButtonSpinner />
+                  জমা হচ্ছে...
+                </>
+              ) : isPending ? (
+                "যাচাইয়ের অপেক্ষায় আছে"
+              ) : (
+                "পেমেন্ট তথ্য জমা দিন"
+              )}
+            </button>
+          </form>
+        )}
+      </section>
     </div>
   );
 }

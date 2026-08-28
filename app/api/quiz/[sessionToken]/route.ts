@@ -16,9 +16,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ses
 
   if (sessionError || !session) return errorResponse("সেশন পাওয়া যায়নি।", 404);
 
-  const [{ data: answers }, { data: storedReport }] = await Promise.all([
+  const [{ data: answers }, { data: storedReport }, { data: verifiedPayment }] = await Promise.all([
     supabaseAdmin.from("quiz_answers").select("question_key, answer_key").eq("quiz_session_id", session.id),
     supabaseAdmin.from("reports").select("*").eq("quiz_session_id", session.id).maybeSingle(),
+    supabaseAdmin.from("payments").select("id").eq("quiz_session_id", session.id).eq("status", "verified").maybeSingle(),
   ]);
 
   const safeSession: Record<string, unknown> = { ...session };
@@ -40,7 +41,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ses
         suggested_conversation: storedReport?.suggested_conversation ?? template.suggestedConversation,
         relationship_insight: storedReport?.relationship_insight ?? template.relationshipInsight,
         suggested_messages: storedReport?.suggested_messages ?? template.suggestedMessages,
-        is_unlocked: Boolean(storedReport?.is_unlocked) || session.status === "report_unlocked",
+        is_unlocked: Boolean(verifiedPayment),
       }
     : storedReport;
 

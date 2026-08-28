@@ -44,6 +44,25 @@ export const earlyAccessSchema = z.object({
   feedback: z.string().trim().max(1000).optional(),
 });
 
+export const paymentSubmitSchema = z.object({
+  sessionToken: z.string().min(12).max(200),
+  bkashTrxId: z
+    .string()
+    .trim()
+    .min(6)
+    .max(40)
+    .regex(/^[a-zA-Z0-9]+$/),
+  senderMobileNumber: z
+    .string()
+    .trim()
+    .transform(normalizeBangladeshMobile)
+    .refine((value) => /^01[3-9]\d{8}$/.test(value), { message: "INVALID_MOBILE" }),
+});
+
+export const adminPaymentStatusSchema = z.object({
+  status: z.enum(["verified", "rejected"]),
+});
+
 export const messageGenerateSchema = z.object({
   sessionToken: z.string().min(12).max(200).optional(),
   receivedText: z.string().trim().min(1).max(1000),

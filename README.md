@@ -16,6 +16,7 @@ Copy `.env.example` to `.env.local` and fill in:
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+PAYMENT_ADMIN_TOKEN=
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` is imported only from `lib/supabase/admin.ts`, which uses `server-only`. Never expose it in client components or public logs.
@@ -71,12 +72,35 @@ npm run test
 - `POST /api/quiz/answer`
 - `POST /api/quiz/complete`
 - `GET /api/quiz/[sessionToken]`
+- `GET /api/payment/status`
+- `POST /api/payment/submit`
+- `GET /api/admin/payments`
+- `PATCH /api/admin/payments/[paymentId]`
 - `POST /api/payment/demo`
 - `POST /api/message/generate`
 
-## Demo Payment
+## Manual bKash Payment
 
-The demo payment page collects name, mobile number, and transaction number only. It does not collect card details and does not charge real money. A successful demo payment marks the payment as paid, unlocks the report, and updates the quiz session status.
+The `/payment` page shows personal bKash Send Money instructions for `01953121121`. Users submit their bKash TrxID and sender mobile number. This creates a `pending` payment only; it never unlocks the report.
+
+Admin verification is intentionally minimal and token-protected. Set `PAYMENT_ADMIN_TOKEN` in the server environment, then use:
+
+```bash
+curl -H "Authorization: Bearer $PAYMENT_ADMIN_TOKEN" \
+  "https://relationship.creatives71.com/api/admin/payments?status=pending"
+```
+
+After comparing the TrxID against bKash transaction history, mark it manually:
+
+```bash
+curl -X PATCH \
+  -H "Authorization: Bearer $PAYMENT_ADMIN_TOKEN" \
+  -H "content-type: application/json" \
+  -d '{"status":"verified"}' \
+  "https://relationship.creatives71.com/api/admin/payments/PAYMENT_ID"
+```
+
+Use `{"status":"rejected"}` when the bKash transaction cannot be verified. Only `verified` payments unlock the detailed report. The legacy `/api/payment/demo` Lead route is retained unchanged for the existing Meta Lead implementation.
 
 ## Intentionally Excluded From Step 2
 
