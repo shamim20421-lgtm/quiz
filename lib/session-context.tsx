@@ -9,6 +9,7 @@ type SessionContextValue = {
   sessionToken: string | null;
   problemType: ProblemType | null;
   answers: Answers;
+  isSessionLoaded: boolean;
   setSession: (sessionToken: string, problemType: ProblemType) => void;
   setAnswer: (questionKey: string, answerKey: string) => void;
   clearSession: () => void;
@@ -19,12 +20,24 @@ const SessionContext = createContext<SessionContextValue | null>(null);
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [problemType, setProblemType] = useState<ProblemType | null>(null);
+  const [isSessionLoaded, setIsSessionLoaded] = useState(false);
   const [answers, setAnswers] = useState<Answers>({});
 
   useEffect(() => {
-    setSessionToken(sessionStorage.getItem("sessionToken"));
-    const savedProblemType = sessionStorage.getItem("problemType") as ProblemType | null;
+    const savedSessionToken = localStorage.getItem("sessionToken") || sessionStorage.getItem("sessionToken");
+    const savedProblemType = (localStorage.getItem("problemType") || sessionStorage.getItem("problemType")) as ProblemType | null;
+
+    if (savedSessionToken) {
+      localStorage.setItem("sessionToken", savedSessionToken);
+      sessionStorage.setItem("sessionToken", savedSessionToken);
+      setSessionToken(savedSessionToken);
+    }
     if (savedProblemType) setProblemType(savedProblemType);
+    if (savedProblemType) {
+      localStorage.setItem("problemType", savedProblemType);
+      sessionStorage.setItem("problemType", savedProblemType);
+    }
+    setIsSessionLoaded(true);
   }, []);
 
   const value = useMemo<SessionContextValue>(
@@ -32,10 +45,13 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       sessionToken,
       problemType,
       answers,
+      isSessionLoaded,
       setSession: (token, type) => {
         setSessionToken(token);
         setProblemType(type);
         setAnswers({});
+        localStorage.setItem("sessionToken", token);
+        localStorage.setItem("problemType", type);
         sessionStorage.setItem("sessionToken", token);
         sessionStorage.setItem("problemType", type);
       },
@@ -46,12 +62,15 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         setSessionToken(null);
         setProblemType(null);
         setAnswers({});
+        localStorage.removeItem("sessionToken");
+        localStorage.removeItem("problemType");
+        localStorage.removeItem("messageResult");
         sessionStorage.removeItem("sessionToken");
         sessionStorage.removeItem("problemType");
         sessionStorage.removeItem("messageResult");
       },
     }),
-    [answers, problemType, sessionToken],
+    [answers, isSessionLoaded, problemType, sessionToken],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

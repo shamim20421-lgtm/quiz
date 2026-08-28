@@ -17,7 +17,7 @@ type ResultData = {
 
 export default function ResultPage() {
   const router = useRouter();
-  const { sessionToken, clearSession } = useSessionState();
+  const { sessionToken, clearSession, isSessionLoaded } = useSessionState();
   const [data, setData] = useState<ResultData | null>(null);
   const [error, setError] = useState("");
   const trackedResultView = useRef<string | null>(null);
@@ -27,6 +27,7 @@ export default function ResultPage() {
 
   async function load() {
     if (loadingRef.current) return;
+    if (!isSessionLoaded) return;
     if (!sessionToken) {
       router.replace("/start");
       return;
@@ -56,7 +57,7 @@ export default function ResultPage() {
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionToken]);
+  }, [isSessionLoaded, sessionToken]);
 
   if (loading && !data && !error) {
     return <div className="mx-auto max-w-[520px] px-4 py-8"><LoadingState title="ফলাফল আনা হচ্ছে..." /></div>;

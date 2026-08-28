@@ -20,7 +20,7 @@ function getProcessingDelay() {
 
 export default function AnalyzingPage() {
   const router = useRouter();
-  const { sessionToken } = useSessionState();
+  const { sessionToken, isSessionLoaded } = useSessionState();
   const [activeStep, setActiveStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [processingComplete, setProcessingComplete] = useState(false);
@@ -59,6 +59,7 @@ export default function AnalyzingPage() {
 
   async function complete() {
     if (completingRef.current) return;
+    if (!isSessionLoaded) return;
     if (!sessionToken) {
       router.replace("/start");
       return;
@@ -96,7 +97,7 @@ export default function AnalyzingPage() {
     void complete();
     return () => clearProcessingTimers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionToken]);
+  }, [isSessionLoaded, sessionToken]);
 
   return (
     <div className="min-h-[calc(100svh-9rem)] px-4 py-8">

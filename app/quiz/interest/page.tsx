@@ -18,7 +18,7 @@ function toBanglaNumber(value: number) {
 
 export default function QuizInterestPage() {
   const router = useRouter();
-  const { sessionToken, setAnswer, answers } = useSessionState();
+  const { sessionToken, setAnswer, answers, isSessionLoaded } = useSessionState();
   const [intro, setIntro] = useState(true);
   const [index, setIndex] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -32,8 +32,9 @@ export default function QuizInterestPage() {
   const progressPercent = Math.round(((index + 1) / assessmentQuestions.length) * 100);
 
   useEffect(() => {
+    if (!isSessionLoaded) return;
     if (!sessionToken) router.replace("/start");
-  }, [router, sessionToken]);
+  }, [isSessionLoaded, router, sessionToken]);
 
   useEffect(() => {
     if (saving) return;

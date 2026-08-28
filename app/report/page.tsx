@@ -23,7 +23,7 @@ type Report = {
 
 export default function ReportPage() {
   const router = useRouter();
-  const { sessionToken } = useSessionState();
+  const { sessionToken, isSessionLoaded } = useSessionState();
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -31,6 +31,7 @@ export default function ReportPage() {
 
   async function load() {
     if (loadingRef.current) return;
+    if (!isSessionLoaded) return;
     if (!sessionToken) {
       router.replace("/start");
       return;
@@ -58,7 +59,7 @@ export default function ReportPage() {
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionToken]);
+  }, [isSessionLoaded, sessionToken]);
 
   if (loading && !report && !error) return <div className="mx-auto max-w-[520px] px-4 py-8"><LoadingState title="রিপোর্ট আনা হচ্ছে..." /></div>;
 

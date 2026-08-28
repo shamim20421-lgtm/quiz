@@ -7,6 +7,7 @@ const paymentPage = readFileSync(join(root, "app/payment/page.tsx"), "utf8");
 const submitRoute = readFileSync(join(root, "app/api/payment/submit/route.ts"), "utf8");
 const adminRoute = readFileSync(join(root, "app/api/admin/payments/[paymentId]/route.ts"), "utf8");
 const quizRoute = readFileSync(join(root, "app/api/quiz/[sessionToken]/route.ts"), "utf8");
+const sessionContext = readFileSync(join(root, "lib/session-context.tsx"), "utf8");
 const demoLeadRoute = readFileSync(join(root, "app/api/payment/demo/route.ts"), "utf8");
 const migration = readFileSync(join(root, "supabase/migrations/202608280001_manual_bkash_payments.sql"), "utf8");
 
@@ -19,7 +20,8 @@ describe("manual bKash payment MVP", () => {
     expect(paymentPage).toContain("৳{offer.amount}");
     expect(paymentPage).toContain("bKash-এ Send Money করুন");
     expect(paymentPage).toContain("01953121121");
-    expect(paymentPage).toContain("Payment verification pending");
+    expect(paymentPage).toContain("পেমেন্ট যাচাই করা হচ্ছে...");
+    expect(paymentPage).toContain("সাধারণত কয়েক মিনিটের মধ্যেই যাচাই সম্পন্ন হবে। এই পেজটি বন্ধ করবেন না।");
   });
 
   it("submits only verification details and does not emit Meta purchase or lead from the pending submit", () => {
@@ -42,6 +44,25 @@ describe("manual bKash payment MVP", () => {
     expect(quizRoute).toContain(".eq(\"status\", \"verified\")");
     expect(quizRoute).toContain("is_unlocked: Boolean(verifiedPayment)");
     expect(quizRoute).not.toContain("session.status === \"report_unlocked\"");
+  });
+
+  it("polls pending payments and renders the unlocked report inline without navigation", () => {
+    expect(paymentPage).toContain("setInterval");
+    expect(paymentPage).toContain("pollingIntervalMs = 4500");
+    expect(paymentPage).toContain("pollingTimeoutMs");
+    expect(paymentPage).toContain("loadUnlockedReport");
+    expect(paymentPage).toContain("payload.report?.is_unlocked");
+    expect(paymentPage).toContain("পেমেন্ট সফলভাবে যাচাই হয়েছে ✓");
+    expect(paymentPage).toContain("ReportSection");
+    expect(paymentPage).not.toContain("router.push(\"/report\")");
+  });
+
+  it("persists only the opaque session token needed to restore payment/report state", () => {
+    expect(sessionContext).toContain("localStorage.getItem(\"sessionToken\")");
+    expect(sessionContext).toContain("localStorage.setItem(\"sessionToken\", token)");
+    expect(sessionContext).toContain("isSessionLoaded");
+    expect(sessionContext).not.toContain("localStorage.setItem(\"answers\"");
+    expect(sessionContext).not.toContain("localStorage.setItem(\"bkash");
   });
 
   it("keeps admin verification token-protected and does not send Meta Purchase for launch", () => {
